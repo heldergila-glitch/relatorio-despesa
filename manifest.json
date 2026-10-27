@@ -1,6 +1,6 @@
 {
   "name": "Relatório de Despesas",
-  "short_name": "Relatório",
+  "short_name": "Despesa com Anexo",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
