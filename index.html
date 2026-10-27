@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Despesas</title>
+    <!-- Bibliotecas necessárias carregadas via internet -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function ControleDespesas() {
+            const [formData, setFormData] = useState({
+                beneficiario: '', cpfBeneficiario: '', representante: '', cpfRepresentante: '', endereco: '', mesAno: ''
+            });
+            const [despesas, setDespesas] = useState([]);
+            const [novaDespesa, setNovaDespesa] = useState({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
+            const [isGenerating, setIsGenerating] = useState(false);
+
+            // Carrega os dados salvos ao abrir o app
+            useEffect(() => {
+                const saved = localStorage.getItem('bpc_formData_v6');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.formData) setFormData(parsed.formData);
+                    if (parsed.despesas) setDespesas(parsed.despesas);
+                }
+            }, []);
+
+            // Salva os dados automaticamente a cada alteração
+            useEffect(() => {
+                localStorage.setItem('bpc_formData_v6', JSON.stringify({ formData, despesas }));
+            }, [formData, despesas]);
+
+            const handleAddDespesa = () => {
+                if (!novaDespesa.data || !novaDespesa.valor || !novaDespesa.justificativa) {
+                    alert('Preencha os campos obrigatórios (Data, Valor e Justificativa)');
+                    return;
+                }
+                setDespesas([...despesas, novaDespesa]);
+                // Reseta o formulário mantendo a categoria Terapia como padrão
+                setNovaDespesa({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
+            };
+
+            const handleImageUpload = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => setNovaDespesa({ ...novaDespesa, anexo: reader.result });
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const removerDespesa = (index) => {
+                setDespesas(despesas.filter((_, i) => i !== index));
+            };
+
+            // Função segura para converter número em Moeda (R$)
+            const formatCurrency = (val) => {
+                const num = parseFloat(val);
+                return isNaN(num) ? 'R$ 0,00' : num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            };
+            
+            const total = despesas.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+
+            const generatePDF = () => {
+                setIsGenerating(true);
+                
+                const processPdf = () => {
+                    const mainUi = document.getElementById('main-ui');
+                    const pdfContent = document.getElementById('pdf-content');
+                    
+                    // 1. Oculta a interface principal e mostra o PDF no topo absoluto
+                    mainUi.style.display = 'none';
+                    pdfContent.style.display = 'block';
+                    
+                    // 2. Força a rolagem para o topo 0
+                    window.scrollTo(0, 0);
+                    
+                    const opt = {
+                        margin:       [5, 5, 10, 5], // 5 milímetros no topo e laterais. 10mm no rodapé.
+                        filename:     `Relatorio_Despesas_${formData.beneficiario || 'Requerente'}_${(formData.mesAno || 'Mes').replace('/', '-')}.pdf`,
+                        image:        { type: 'jpeg', quality: 0.98 },
+                        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                        pagebreak:    { mode: ['css', 'legacy'], avoid: '.expense-block' }
+                    };
+                    
+                    window.html2pdf().set(opt).from(pdfContent).save().then(() => {
+                        // 3. Restaura a interface após gerar o documento
+                        mainUi.style.display = 'block';
+                        pdfContent.style.display = 'none';
+                        setIsGenerating(false);
+                    }).catch(err => {
+                        console.error("Erro ao gerar PDF:", err);
+                        mainUi.style.display = 'block';
+                        pdfContent.style.display = 'none';
+                        setIsGenerating(false);
+                    });
+                };
+
+                // Garante que a biblioteca só seja baixada se não existir
+                if (!window.html2pdf) {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                    script.onload = processPdf;
+                    document.body.appendChild(script);
+                } else {
+                    processPdf();
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-100 p-4 font-sans text-gray-800">
+                    
+                    {/* TELA PRINCIPAL (APP) */}
+                    <div id="main-ui" className="max-w-4xl mx-auto space-y-6 relative">
+                        <h1 className="text-2xl font-bold text-center text-blue-900">Controle de Despesas</h1>
+                        
+                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                            <h2 className="text-lg font-semibold border-b pb-2 text-gray-700">Dados Principais</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input className="border p-2 rounded w-full bg-blue-50 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Beneficiário (Criança)" value={formData.beneficiario} onChange={e => setFormData({...formData, beneficiario: e.target.value})} />
+                                <input className="border p-2 rounded w-full bg-blue-50 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="CPF do Beneficiário" value={formData.cpfBeneficiario} onChange={e => setFormData({...formData, cpfBeneficiario: e.target.value})} />
+                                <input className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Mês/Ano Ref. (Ex: 10/2026)" value={formData.mesAno} onChange={e => setFormData({...formData, mesAno: e.target.value})} />
+                                <input className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Representante Legal" value={formData.representante} onChange={e => setFormData({...formData, representante: e.target.value})} />
+                                <input className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-200 outline-none" placeholder="CPF do Representante" value={formData.cpfRepresentante} onChange={e => setFormData({...formData, cpfRepresentante: e.target.value})} />
+                                <input className="border p-2 rounded w-full md:col-span-2 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Endereço Completo" value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})} />
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+                            <h2 className="text-lg font-semibold border-b pb-2 text-gray-700">Nova Despesa</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <select className="border p-2 rounded focus:ring-2 focus:ring-blue-200 outline-none bg-white" value={novaDespesa.categoria} onChange={e => setNovaDespesa({...novaDespesa, categoria: e.target.value})}>
+                                    <option value="Terapia">Terapia / Consulta</option>
+                                    <option value="Escola / Cursos">Escola / Cursos</option>
+                                    <option value="Combustível">Combustível</option>
+                                    <option value="Uber / App">Uber / App</option>
+                                    <option value="Farmácia">Farmácia</option>
+                                    <option value="Alimentação">Alimentação</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                                <input type="date" className="border p-2 rounded focus:ring-2 focus:ring-blue-200 outline-none" value={novaDespesa.data} onChange={e => setNovaDespesa({...novaDespesa, data: e.target.value})} />
+                                <input type="number" className="border p-2 rounded focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Valor (R$)" value={novaDespesa.valor} onChange={e => setNovaDespesa({...novaDespesa, valor: e.target.value})} />
+                                <input className="border p-2 rounded md:col-span-3 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Justificativa (Ex: Sessão de fonoaudiologia...)" value={novaDespesa.justificativa} onChange={e => setNovaDespesa({...novaDespesa, justificativa: e.target.value})} />
+                                
+                                <div className="md:col-span-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Anexar Comprovante (Foto ou Print)</label>
+                                    <input type="file" accept="image/*,application/pdf" className="border p-2 rounded w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onChange={handleImageUpload} />
+                                </div>
+                                
+                                <button onClick={handleAddDespesa} className="bg-blue-600 text-white p-3 rounded-lg md:col-span-3 font-bold hover:bg-blue-700 transition-colors shadow-sm">Adicionar Despesa</button>
+                            </div>
+                        </div>
+
+                        {despesas.length > 0 && (
+                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                <div className="flex justify-between items-center border-b pb-2 mb-4">
+                                    <h2 className="text-lg font-semibold text-gray-700">Resumo dos Lançamentos ({despesas.length})</h2>
+                                    <span className="text-xl font-bold text-green-700">Total: {formatCurrency(total)}</span>
+                                </div>
+                                <div className="space-y-4">
+                                    {despesas.map((d, i) => (
+                                        <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center border p-3 rounded bg-gray-50">
+                                            <div className="mb-2 sm:mb-0">
+                                                <span className="font-bold text-gray-800">{d.categoria}</span> <span className="text-gray-500">| {d.data}</span><br/>
+                                                <span className="text-sm text-gray-600 italic">{d.justificativa}</span>
+                                            </div>
+                                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                                                <span className="font-bold text-gray-800">{formatCurrency(d.valor)}</span>
+                                                <button onClick={() => removerDespesa(i)} className="text-red-600 font-bold hover:bg-red-100 px-3 py-1 rounded transition-colors" title="Remover despesa">X</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <button onClick={generatePDF} disabled={isGenerating} className="w-full mt-6 bg-green-600 text-white p-4 rounded-lg font-bold text-lg hover:bg-green-700 disabled:opacity-50 transition-colors shadow-md flex justify-center items-center">
+                                    {isGenerating ? 'Gerando Documento...' : 'Baixar Relatório em PDF'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* AREA INVISIVEL DO PDF */}
+                    <div id="pdf-content" style={{ display: 'none', width: '100%', backgroundColor: 'white', color: 'black', fontFamily: 'Arial, sans-serif' }}>
+                        
+                        <div className="text-center font-bold mb-4 pt-2">
+                            <div className="text-lg uppercase leading-none mb-1">Relatório de Despesas</div>
+                            <div className="text-sm font-normal uppercase leading-none">Comprovação de Comprometimento de Renda</div>
+                        </div>
+                        
+                        <div className="border-t border-b border-black py-2 mb-4 text-xs leading-tight">
+                            <div><span className="font-bold">BENEFICIÁRIO(A):</span> <span className="font-normal">{formData.beneficiario}</span> {formData.cpfBeneficiario ? <><span className="font-bold">| CPF:</span> <span className="font-normal">{formData.cpfBeneficiario}</span></> : ''}</div>
+                            <div><span className="font-bold">REPRESENTANTE LEGAL:</span> <span className="font-normal">{formData.representante}</span> {formData.cpfRepresentante ? <><span className="font-bold">| CPF:</span> <span className="font-normal">{formData.cpfRepresentante}</span></> : ''}</div>
+                            <div><span className="font-bold">ENDEREÇO:</span> <span className="font-normal">{formData.endereco}</span></div>
+                            <div className="mt-1 flex justify-between text-[13px]">
+                                <div><span className="font-bold">REF:</span> <span className="font-normal">{formData.mesAno}</span></div>
+                                <span className="text-sm font-bold">TOTAL: {formatCurrency(total)}</span>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            {despesas.map((d, idx) => (
+                                <div key={idx} className="expense-block break-inside-avoid w-full">
+                                    <div className="flex justify-between font-bold text-sm border-b border-black border-dashed pb-1 mb-1">
+                                        <span>{idx + 1}. {d.categoria.toUpperCase()} | {d.data}</span>
+                                        <span>{formatCurrency(d.valor)}</span>
+                                    </div>
+                                    <div className="text-xs mb-2 text-justify">
+                                        <span className="font-bold">JUSTIFICATIVA:</span> <span className="font-normal">{d.justificativa}</span>
+                                    </div>
+                                    {d.anexo && (
+                                        <div className="flex justify-center mt-2">
+                                            <img src={d.anexo} alt="Comprovante" className="max-w-full max-h-[600px] object-contain border border-gray-300 rounded" />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="expense-block break-inside-avoid w-full mt-10 pt-6 border-t border-black text-center text-xs font-normal">
+                            <p className="mb-10">Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.</p>
+                            <p>Maceió - AL, _____ / _____ / __________</p>
+                            <div className="mt-8 border-t border-black w-2/3 mx-auto pt-1">
+                                <p className="font-bold uppercase">{formData.representante || 'REPRESENTANTE LEGAL'}</p>
+                                <p>Representante Legal</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ControleDespesas />);
+    </script>
+</body>
+</html>
