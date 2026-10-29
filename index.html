@@ -10,13 +10,6 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<link rel="manifest" href="manifest.json">
-
-<meta name="theme-color" content="#2563eb">
-
-<meta name="mobile-web-app-capable" content="yes">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body class="bg-gray-100">
     <div id="root"></div>
@@ -31,6 +24,8 @@
             const [despesas, setDespesas] = useState([]);
             const [novaDespesa, setNovaDespesa] = useState({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
             const [isGenerating, setIsGenerating] = useState(false);
+            const [editingIndex, setEditingIndex] = useState(null);
+            const [formError, setFormError] = useState('');
 
             // Carrega os dados salvos ao abrir o app
             useEffect(() => {
@@ -49,12 +44,31 @@
 
             const handleAddDespesa = () => {
                 if (!novaDespesa.data || !novaDespesa.valor || !novaDespesa.justificativa) {
-                    alert('Preencha os campos obrigatórios (Data, Valor e Justificativa)');
+                    setFormError('Por favor, preencha a Data, o Valor e a Justificativa.');
                     return;
                 }
-                setDespesas([...despesas, novaDespesa]);
-                // Reseta o formulário mantendo a categoria Terapia como padrão
+                setFormError('');
+
+                if (editingIndex !== null) {
+                    // Atualiza a despesa existente
+                    const novasDespesas = [...despesas];
+                    novasDespesas[editingIndex] = novaDespesa;
+                    setDespesas(novasDespesas);
+                    setEditingIndex(null);
+                } else {
+                    // Adiciona nova despesa
+                    setDespesas([...despesas, novaDespesa]);
+                }
+                
+                // Reseta o formulário
                 setNovaDespesa({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
+            };
+
+            const handleEdit = (index) => {
+                setNovaDespesa(despesas[index]);
+                setEditingIndex(index);
+                setFormError('');
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe a tela para o formulário
             };
 
             const handleImageUpload = (e) => {
@@ -68,6 +82,10 @@
 
             const removerDespesa = (index) => {
                 setDespesas(despesas.filter((_, i) => i !== index));
+                if (editingIndex === index) {
+                    setEditingIndex(null);
+                    setNovaDespesa({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
+                }
             };
 
             // Função segura para converter número em Moeda (R$)
@@ -126,121 +144,199 @@
             };
 
             return (
-                <div className="min-h-screen bg-gray-100 p-4 font-sans text-gray-800">
+                <div className="min-h-screen bg-slate-100 p-4 font-sans text-gray-800 pb-20">
                     
-                    {/* TELA PRINCIPAL (APP) */}
-                    <div id="main-ui" className="max-w-4xl mx-auto space-y-6 relative">
-                        <h1 className="text-2xl font-bold text-center text-blue-900">Controle de Despesas</h1>
+                    {/* TELA PRINCIPAL (APP) INSPIRADA NO DESIGN PREMIUM */}
+                    <div id="main-ui" className="max-w-4xl mx-auto space-y-4 relative">
                         
-                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
-                            <h2 className="text-lg font-semibold border-b pb-2 text-gray-700">Dados Principais</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input className="border p-2 rounded w-full bg-blue-50 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Beneficiário (Criança)" value={formData.beneficiario} onChange={e => setFormData({...formData, beneficiario: e.target.value})} />
-                                <input className="border p-2 rounded w-full bg-blue-50 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="CPF do Beneficiário" value={formData.cpfBeneficiario} onChange={e => setFormData({...formData, cpfBeneficiario: e.target.value})} />
-                                <input className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Mês/Ano Ref. (Ex: 10/2026)" value={formData.mesAno} onChange={e => setFormData({...formData, mesAno: e.target.value})} />
-                                <input className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Representante Legal" value={formData.representante} onChange={e => setFormData({...formData, representante: e.target.value})} />
-                                <input className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-200 outline-none" placeholder="CPF do Representante" value={formData.cpfRepresentante} onChange={e => setFormData({...formData, cpfRepresentante: e.target.value})} />
-                                <input className="border p-2 rounded w-full md:col-span-2 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Endereço Completo" value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})} />
+                        {/* CABEÇALHO DEGRADÊ */}
+                        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-6 shadow-md">
+                            <h1 className="text-3xl font-bold">💰 Controle de Despesas</h1>
+                            <p className="opacity-90 mt-1">Gestão financeira do benefício BPC/LOAS</p>
+                        </div>
+
+                        {/* CARTÕES DE RESUMO */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-center items-center">
+                                <div className="text-gray-500 font-semibold text-sm">Total Acumulado</div>
+                                <div className="text-2xl font-bold text-blue-700">{formatCurrency(total)}</div>
+                            </div>
+                            <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-center items-center">
+                                <div className="text-gray-500 font-semibold text-sm">Despesas Registradas</div>
+                                <div className="text-2xl font-bold text-indigo-700">{despesas.length}</div>
+                            </div>
+                        </div>
+                        
+                        {/* FORMULÁRIO DE DADOS */}
+                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-3">
+                            <h2 className="text-lg font-bold text-gray-700 px-2">📋 Dados do Requerente</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input className="border p-3 rounded-2xl w-full bg-slate-50 focus:ring-2 focus:ring-blue-400 outline-none transition-all" placeholder="Beneficiário (Criança)" value={formData.beneficiario} onChange={e => setFormData({...formData, beneficiario: e.target.value})} />
+                                <input className="border p-3 rounded-2xl w-full bg-slate-50 focus:ring-2 focus:ring-blue-400 outline-none transition-all" placeholder="CPF do Beneficiário" value={formData.cpfBeneficiario} onChange={e => setFormData({...formData, cpfBeneficiario: e.target.value})} />
+                                <input className="border p-3 rounded-2xl w-full focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="Mês/Ano Ref. (Ex: 10/2026)" value={formData.mesAno} onChange={e => setFormData({...formData, mesAno: e.target.value})} />
+                                <input className="border p-3 rounded-2xl w-full focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="Representante Legal" value={formData.representante} onChange={e => setFormData({...formData, representante: e.target.value})} />
+                                <input className="border p-3 rounded-2xl w-full focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="CPF do Representante" value={formData.cpfRepresentante} onChange={e => setFormData({...formData, cpfRepresentante: e.target.value})} />
+                                <input className="border p-3 rounded-2xl w-full md:col-span-2 focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="Endereço Completo" value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})} />
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
-                            <h2 className="text-lg font-semibold border-b pb-2 text-gray-700">Nova Despesa</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <select className="border p-2 rounded focus:ring-2 focus:ring-blue-200 outline-none bg-white" value={novaDespesa.categoria} onChange={e => setNovaDespesa({...novaDespesa, categoria: e.target.value})}>
+                        {/* FORMULÁRIO DE DESPESAS */}
+                        <div className={`bg-white p-6 rounded-3xl shadow-sm border ${editingIndex !== null ? 'border-amber-400 ring-2 ring-amber-100' : 'border-gray-100'} space-y-3 transition-all duration-300`}>
+                            <h2 className="text-lg font-bold text-gray-700 px-2 flex justify-between items-center">
+                                <span>{editingIndex !== null ? '✏️ Editando Despesa' : '➕ Nova Despesa'}</span>
+                                {editingIndex !== null && (
+                                    <button onClick={() => {setEditingIndex(null); setNovaDespesa({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' })}} className="text-sm font-normal text-gray-500 hover:text-red-500 bg-gray-100 px-3 py-1 rounded-full transition-colors">
+                                        Cancelar Edição
+                                    </button>
+                                )}
+                            </h2>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <select className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none bg-white" value={novaDespesa.categoria} onChange={e => setNovaDespesa({...novaDespesa, categoria: e.target.value})}>
                                     <option value="Terapia">Terapia / Consulta</option>
                                     <option value="Escola / Cursos">Escola / Cursos</option>
                                     <option value="Combustível">Combustível</option>
                                     <option value="Uber / App">Uber / App</option>
                                     <option value="Farmácia">Farmácia</option>
                                     <option value="Alimentação">Alimentação</option>
-                                    <option value="Vestuário">Vestuário</option>
-                                    <option value="Lazer">Lazer</option>
                                     <option value="Outros">Outros</option>
                                 </select>
-                                <input type="date" className="border p-2 rounded focus:ring-2 focus:ring-blue-200 outline-none" value={novaDespesa.data} onChange={e => setNovaDespesa({...novaDespesa, data: e.target.value})} />
-                                <input type="number" className="border p-2 rounded focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Valor (R$)" value={novaDespesa.valor} onChange={e => setNovaDespesa({...novaDespesa, valor: e.target.value})} />
-                                <input className="border p-2 rounded md:col-span-3 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="Justificativa (Ex: Sessão de fonoaudiologia...)" value={novaDespesa.justificativa} onChange={e => setNovaDespesa({...novaDespesa, justificativa: e.target.value})} />
+                                <input type="date" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" value={novaDespesa.data} onChange={e => setNovaDespesa({...novaDespesa, data: e.target.value})} />
+                                <input type="number" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Valor (R$)" value={novaDespesa.valor} onChange={e => setNovaDespesa({...novaDespesa, valor: e.target.value})} />
+                                <textarea rows="2" className="border p-3 rounded-2xl md:col-span-3 focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Justificativa (Ex: Sessão de fonoaudiologia...)" value={novaDespesa.justificativa} onChange={e => setNovaDespesa({...novaDespesa, justificativa: e.target.value})}></textarea>
                                 
-                                <div className="md:col-span-3">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Anexar Comprovante (Foto ou Print)</label>
-                                    <input type="file" accept="image/*,application/pdf" className="border p-2 rounded w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onChange={handleImageUpload} />
+                                <div className="md:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 border-dashed flex items-center justify-between">
+                                    <div className="flex-1 w-full">
+                                        <label className="block text-sm font-bold text-gray-600 mb-2">📸 Anexar Comprovante (Foto ou Print)</label>
+                                        <input type="file" accept="image/*,application/pdf" className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer transition-colors" onChange={handleImageUpload} />
+                                    </div>
+                                    {novaDespesa.anexo && <img src={novaDespesa.anexo} className="h-14 w-14 object-cover rounded-lg border ml-2" alt="mini" />}
                                 </div>
                                 
-                                <button onClick={handleAddDespesa} className="bg-blue-600 text-white p-3 rounded-lg md:col-span-3 font-bold hover:bg-blue-700 transition-colors shadow-sm">Adicionar Despesa</button>
+                                {formError && <div className="md:col-span-3 text-red-500 font-semibold px-2 text-sm text-center animate-pulse">{formError}</div>}
+
+                                <button onClick={handleAddDespesa} className={`${editingIndex !== null ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700'} text-white p-3.5 rounded-2xl md:col-span-3 font-bold text-lg transition-colors shadow-sm`}>
+                                    {editingIndex !== null ? 'Salvar Alterações' : 'Adicionar Despesa'}
+                                </button>
                             </div>
                         </div>
 
+                        {/* LISTA DE DESPESAS */}
                         {despesas.length > 0 && (
-                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                                <div className="flex justify-between items-center border-b pb-2 mb-4">
-                                    <h2 className="text-lg font-semibold text-gray-700">Resumo dos Lançamentos ({despesas.length})</h2>
-                                    <span className="text-xl font-bold text-green-700">Total: {formatCurrency(total)}</span>
-                                </div>
-                                <div className="space-y-4">
-                                    {despesas.map((d, i) => (
-                                        <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center border p-3 rounded bg-gray-50">
-                                            <div className="mb-2 sm:mb-0">
-                                                <span className="font-bold text-gray-800">{d.categoria}</span> <span className="text-gray-500">| {d.data}</span><br/>
-                                                <span className="text-sm text-gray-600 italic">{d.justificativa}</span>
+                            <div className="space-y-3 mt-4">
+                                <h2 className="text-lg font-bold text-gray-700 px-2 flex justify-between items-center">
+                                    🧾 Lançamentos Registrados
+                                </h2>
+                                {despesas.map((d, i) => (
+                                    <div key={i} className={`bg-white p-5 rounded-3xl shadow-sm border ${editingIndex === i ? 'border-amber-400' : 'border-gray-100'} flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all hover:shadow-md`}>
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="font-bold text-gray-800 text-lg">{d.categoria}</span>
+                                                <span className="bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded-lg font-semibold">{d.data}</span>
                                             </div>
-                                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                                                <span className="font-bold text-gray-800">{formatCurrency(d.valor)}</span>
-                                                <button onClick={() => removerDespesa(i)} className="text-red-600 font-bold hover:bg-red-100 px-3 py-1 rounded transition-colors" title="Remover despesa">X</button>
-                                            </div>
+                                            <div className="text-sm text-gray-600 mb-3">{d.justificativa}</div>
+                                            <div className="text-xl font-black text-blue-700">{formatCurrency(d.valor)}</div>
                                         </div>
-                                    ))}
-                                </div>
-                                <button onClick={generatePDF} disabled={isGenerating} className="w-full mt-6 bg-green-600 text-white p-4 rounded-lg font-bold text-lg hover:bg-green-700 disabled:opacity-50 transition-colors shadow-md flex justify-center items-center">
-                                    {isGenerating ? 'Gerando Documento...' : 'Baixar Relatório em PDF'}
+                                        <div className="flex items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
+                                            <button onClick={() => handleEdit(i)} className="flex-1 md:flex-none bg-amber-100 text-amber-700 font-bold px-4 py-2 rounded-xl hover:bg-amber-200 transition-colors flex items-center justify-center gap-2">
+                                                ✏️ Editar
+                                            </button>
+                                            <button onClick={() => removerDespesa(i)} className="flex-1 md:flex-none bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl hover:bg-red-200 transition-colors flex items-center justify-center gap-2">
+                                                🗑️ Excluir
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <button onClick={generatePDF} disabled={isGenerating} className="w-full mt-6 bg-green-500 text-white p-4 rounded-3xl font-black text-lg hover:bg-green-600 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl flex justify-center items-center gap-2 border-b-4 border-green-700 active:border-b-0 active:translate-y-1">
+                                    {isGenerating ? (
+                                        <span className="flex items-center gap-2">
+                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                            Gerando PDF...
+                                        </span>
+                                    ) : '📄 Baixar Relatório Completo PDF'}
                                 </button>
                             </div>
                         )}
                     </div>
 
-                    {/* AREA INVISIVEL DO PDF */}
-                    <div id="pdf-content" style={{ display: 'none', width: '100%', backgroundColor: 'white', color: 'black', fontFamily: 'Arial, sans-serif' }}>
+                    {/* AREA INVISIVEL DO PDF COM DESIGN MODERNO */}
+                    <div id="pdf-content" style={{ display: 'none', width: '100%', backgroundColor: 'white', color: 'black', fontFamily: 'Arial, sans-serif', padding: '10px' }}>
                         
-                        <div className="text-center font-bold mb-4 pt-2">
-                            <div className="text-lg uppercase leading-none mb-1">Relatório de Despesas</div>
-                            <div className="text-sm font-normal uppercase leading-none">Comprovação de Comprometimento de Renda</div>
+                        {/* CABEÇALHO DEGRADÊ ULTRA COMPRIMIDO */}
+                        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-lg p-1.5 mb-2 text-center shadow-sm">
+                            <h1 className="text-lg font-bold uppercase tracking-wider leading-none mb-0.5">Relatório de Despesas</h1>
+                            <p className="text-[9px] uppercase opacity-90 tracking-widest leading-none">Comprovação de Comprometimento de Renda</p>
                         </div>
-                        
-                        <div className="border-t border-b border-black py-2 mb-4 text-xs leading-tight">
-                            <div><span className="font-bold">BENEFICIÁRIO(A):</span> <span className="font-normal">{formData.beneficiario}</span> {formData.cpfBeneficiario ? <><span className="font-bold">| CPF:</span> <span className="font-normal">{formData.cpfBeneficiario}</span></> : ''}</div>
-                            <div><span className="font-bold">REPRESENTANTE LEGAL:</span> <span className="font-normal">{formData.representante}</span> {formData.cpfRepresentante ? <><span className="font-bold">| CPF:</span> <span className="font-normal">{formData.cpfRepresentante}</span></> : ''}</div>
-                            <div><span className="font-bold">ENDEREÇO:</span> <span className="font-normal">{formData.endereco}</span></div>
-                            <div className="mt-1 flex justify-between text-[13px]">
-                                <div><span className="font-bold">REF:</span> <span className="font-normal">{formData.mesAno}</span></div>
-                                <span className="text-sm font-bold">TOTAL: {formatCurrency(total)}</span>
+
+                        {/* DADOS DO REQUERENTE EM CARTÃO ULTRA COMPRIMIDO */}
+                        <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 mb-2">
+                            <div className="grid grid-cols-2 gap-1 text-sm">
+                                <div>
+                                    <p className="text-[9px] text-slate-500 font-bold uppercase mb-0.5 leading-none">Beneficiário(a)</p>
+                                    <p className="font-semibold text-xs text-gray-800 leading-none">{formData.beneficiario || 'Não informado'}</p>
+                                    {formData.cpfBeneficiario && <p className="text-[9px] text-gray-600 mt-0.5 leading-none">CPF: {formData.cpfBeneficiario}</p>}
+                                </div>
+                                <div>
+                                    <p className="text-[9px] text-slate-500 font-bold uppercase mb-0.5 leading-none">Representante Legal</p>
+                                    <p className="font-semibold text-xs text-gray-800 leading-none">{formData.representante || 'Não informado'}</p>
+                                    {formData.cpfRepresentante && <p className="text-[9px] text-gray-600 mt-0.5 leading-none">CPF: {formData.cpfRepresentante}</p>}
+                                </div>
+                                <div className="col-span-2 mt-1 pt-1 border-t border-slate-200">
+                                    <p className="text-[9px] text-slate-500 font-bold uppercase mb-0.5 leading-none">Endereço Completo</p>
+                                    <p className="text-[11px] text-gray-700 leading-none">{formData.endereco || 'Não informado'}</p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-between items-end mt-1 pt-1 border-t border-slate-200">
+                                <div>
+                                    <p className="text-[9px] text-slate-500 font-bold uppercase leading-none mb-0.5">Mês/Ano Ref.</p>
+                                    <p className="font-bold text-gray-800 text-xs leading-none">{formData.mesAno || '___/___'}</p>
+                                </div>
+                                <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded border border-blue-200 flex flex-col justify-center">
+                                    <p className="text-[9px] font-bold uppercase leading-none mb-0.5">Total Comprovado</p>
+                                    <p className="text-sm font-black leading-none">{formatCurrency(total)}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="space-y-6">
+                        {/* BLOCOS DE DESPESA MODERNO */}
+                        <div className="space-y-3">
                             {despesas.map((d, idx) => (
-                                <div key={idx} className="expense-block break-inside-avoid w-full">
-                                    <div className="flex justify-between font-bold text-sm border-b border-black border-dashed pb-1 mb-1">
-                                        <span>{idx + 1}. {d.categoria.toUpperCase()} | {d.data}</span>
-                                        <span>{formatCurrency(d.valor)}</span>
+                                <div key={idx} className="expense-block break-inside-avoid w-full mb-2">
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <div className="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]">{idx + 1}</div>
+                                        <h2 className="text-sm font-bold text-gray-800 uppercase flex-1 leading-none">{d.categoria}</h2>
+                                        <div className="text-right leading-none">
+                                            <p className="text-[10px] font-bold text-slate-500 mb-0.5">{d.data}</p>
+                                            <p className="text-sm font-black text-blue-700">{formatCurrency(d.valor)}</p>
+                                        </div>
                                     </div>
-                                    <div className="text-xs mb-2 text-justify">
-                                        <span className="font-bold">JUSTIFICATIVA:</span> <span className="font-normal">{d.justificativa}</span>
+                                    
+                                    <div className="bg-blue-50 border border-blue-100 rounded-md p-1.5 mb-1.5 text-[11px] text-gray-700 leading-tight">
+                                        <span className="font-bold text-blue-800">JUSTIFICATIVA:</span> <span className="font-normal">{d.justificativa}</span>
                                     </div>
+
                                     {d.anexo && (
-                                        <div className="flex justify-center mt-2">
-                                            <img src={d.anexo} alt="Comprovante" className="max-w-full max-h-[600px] object-contain border border-gray-300 rounded" />
+                                        <div className="flex justify-center mt-1">
+                                            {/* ALTURA DA IMAGEM MANTIDA EM 600px */}
+                                            <img src={d.anexo} alt="Comprovante" className="max-w-full max-h-[600px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50" />
                                         </div>
                                     )}
                                 </div>
                             ))}
                         </div>
 
-                        <div className="expense-block break-inside-avoid w-full mt-10 pt-6 border-t border-black text-center text-xs font-normal">
-                            <p className="mb-10">Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.</p>
-                            <p>Maceió - AL, _____ / _____ / __________</p>
-                            <div className="mt-8 border-t border-black w-2/3 mx-auto pt-1">
-                                <p className="font-bold uppercase">{formData.representante || 'REPRESENTANTE LEGAL'}</p>
-                                <p>Representante Legal</p>
+                        {/* ASSINATURA ULTRA COMPRIMIDA */}
+                        <div className="expense-block break-inside-avoid w-full mt-4 pt-3 border-t-2 border-slate-100 text-center font-normal">
+                            <p className="text-[10px] text-gray-500 mb-4 px-12 leading-tight">
+                                Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.
+                            </p>
+                            <p className="text-[11px] font-semibold text-gray-600 mb-6">Maceió - AL, _____ / _____ / __________</p>
+                            
+                            <div className="w-1/2 mx-auto border-t border-gray-400 pt-1">
+                                <p className="font-bold text-xs text-gray-800 uppercase">{formData.representante || 'REPRESENTANTE LEGAL'}</p>
+                                <p className="text-[9px] text-gray-500">Representante Legal</p>
                             </div>
                         </div>
                     </div>
@@ -251,10 +347,5 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<ControleDespesas />);
     </script>
-<script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js');
-}
-</script>
 </body>
 </html>
