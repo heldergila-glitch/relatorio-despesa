@@ -28,10 +28,82 @@
                 beneficiario: '', cpfBeneficiario: '', representante: '', cpfRepresentante: '', endereco: '', mes: '', ano: new Date().getFullYear()
             });
             const [despesas, setDespesas] = useState([]);
-            const [novaDespesa, setNovaDespesa] = useState({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
+            const [novaDespesa, setNovaDespesa] = useState({
+    categoria: 'Terapia',
+    justificativaModelo: '',
+    data: '',
+    valor: '',
+    justificativa: '',
+    anexo: ''
+});
             const [isGenerating, setIsGenerating] = useState(false);
             const [editingIndex, setEditingIndex] = useState(null);
             const [formError, setFormError] = useState('');
+            const justificativasPorCategoria = {
+
+    "Terapia": [
+        "Sessão de fonoaudiologia.",
+        "Sessão de terapia ocupacional.",
+        "Sessão de psicologia.",
+        "Sessão de fisioterapia.",
+        "Consulta médica especializada."
+    ],
+
+    "Escola / Cursos": [
+        "Pagamento de mensalidade escolar.",
+        "Aquisição de material escolar.",
+        "Compra de uniforme escolar.",
+        "Aquisição de livros didáticos.",
+        "Participação em atividade extracurricular."
+    ],
+
+    "Combustível": [
+        "Deslocamento para consultas médicas.",
+        "Deslocamento para sessões terapêuticas.",
+        "Deslocamento para exames clínicos.",
+        "Transporte para atividade educacional."
+    ],
+
+    "Uber / App": [
+        "Transporte para sessão de terapia.",
+        "Transporte para consulta médica.",
+        "Transporte para realização de exames.",
+        "Transporte para atividade escolar."
+    ],
+
+    "Farmácia": [
+        "Aquisição de medicamentos prescritos.",
+        "Compra de suplementos nutricionais.",
+        "Aquisição de vitaminas.",
+        "Compra de fraldas descartáveis.",
+        "Aquisição de insumos para tratamento."
+    ],
+
+    "Alimentação": [
+        "Aquisição de alimentos para consumo do beneficiário.",
+        "Compra de dieta especial.",
+        "Aquisição de alimentos recomendados por profissional de saúde."
+    ],
+
+    "Vestuário": [
+        "Aquisição de roupas para uso diário.",
+        "Compra de calçados.",
+        "Aquisição de uniforme escolar.",
+        "Compra de vestuário infantil."
+    ],
+
+    "Lazer": [
+        "Participação em atividade recreativa.",
+        "Atividade de inclusão social.",
+        "Passeio educativo.",
+        "Participação em evento cultural."
+    ],
+
+    "Outros": [
+        "Despesa relacionada ao bem-estar do beneficiário.",
+        "Aquisição de item necessário ao dia a dia."
+    ]
+};
 
             // Carrega os dados salvos ao abrir o app
             useEffect(() => {
@@ -259,6 +331,53 @@
                                 </select>
                                 <input type="date" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" value={novaDespesa.data} onChange={e => setNovaDespesa({...novaDespesa, data: e.target.value})} />
                                 <input type="number" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Valor (R$)" value={novaDespesa.valor} onChange={e => setNovaDespesa({...novaDespesa, valor: e.target.value})} />
+                                <select
+    className="
+        border
+        p-3
+        rounded-2xl
+        md:col-span-3
+        focus:ring-2
+        focus:ring-blue-400
+        outline-none
+    "
+
+    value={novaDespesa.justificativaModelo}
+
+    onChange={(e)=>{
+
+        setNovaDespesa({
+
+            ...novaDespesa,
+
+            justificativaModelo:e.target.value,
+
+            justificativa:e.target.value
+
+        });
+
+    }}
+
+>
+
+    <option value="">
+        Selecione uma justificativa sugerida
+    </option>
+
+    {(justificativasPorCategoria[
+        novaDespesa.categoria
+    ] || []).map((item,index)=>(
+
+        <option
+            key={index}
+            value={item}
+        >
+            {item}
+        </option>
+
+    ))}
+
+</select>
                                 <textarea rows="2" className="border p-3 rounded-2xl md:col-span-3 focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Justificativa (Ex: Sessão de fonoaudiologia...)" value={novaDespesa.justificativa} onChange={e => setNovaDespesa({...novaDespesa, justificativa: e.target.value})}></textarea>
                                 
                                 <div className="md:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 border-dashed flex items-center justify-between">
