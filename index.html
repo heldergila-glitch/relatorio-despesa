@@ -29,80 +29,218 @@
             });
             const [despesas, setDespesas] = useState([]);
             const [novaDespesa, setNovaDespesa] = useState({
+
     categoria: 'Terapia',
     justificativaModelo: '',
     data: '',
     valor: '',
     justificativa: '',
     anexo: ''
+
 });
             const [isGenerating, setIsGenerating] = useState(false);
             const [editingIndex, setEditingIndex] = useState(null);
             const [formError, setFormError] = useState('');
             const justificativasPorCategoria = {
 
-    "Terapia": [
-        "Sessão de fonoaudiologia.",
-        "Sessão de terapia ocupacional.",
-        "Sessão de psicologia.",
-        "Sessão de fisioterapia.",
-        "Consulta médica especializada."
-    ],
+"Terapia": [
 
-    "Escola / Cursos": [
-        "Pagamento de mensalidade escolar.",
-        "Aquisição de material escolar.",
-        "Compra de uniforme escolar.",
-        "Aquisição de livros didáticos.",
-        "Participação em atividade extracurricular."
-    ],
+"Outro (descrever manualmente)",
+    
+"Consulta médica especializada.",
+"Sessão de fonoaudiologia.",
+"Sessão de terapia ocupacional.",
+"Sessão de psicologia.",
+"Sessão de fisioterapia.",
+"Sessão de psicopedagogia.",
+"Sessão de equoterapia.",
+"Acompanhamento multiprofissional.",
+"Avaliação neuropsicológica.",
+"Avaliação psicológica.",
+"Atendimento especializado para acompanhamento do desenvolvimento.",
+"Tratamento terapêutico contínuo.",
+"Consulta de retorno para acompanhamento clínico.",
+"Participação em programa de reabilitação.",
+"Atividade terapêutica recomendada por profissional de saúde."
 
-    "Combustível": [
-        "Deslocamento para consultas médicas.",
-        "Deslocamento para sessões terapêuticas.",
-        "Deslocamento para exames clínicos.",
-        "Transporte para atividade educacional."
-    ],
+],
 
-    "Uber / App": [
-        "Transporte para sessão de terapia.",
-        "Transporte para consulta médica.",
-        "Transporte para realização de exames.",
-        "Transporte para atividade escolar."
-    ],
+"Escola / Cursos": [
 
-    "Farmácia": [
-        "Aquisição de medicamentos prescritos.",
-        "Compra de suplementos nutricionais.",
-        "Aquisição de vitaminas.",
-        "Compra de fraldas descartáveis.",
-        "Aquisição de insumos para tratamento."
-    ],
+"Outro (descrever manualmente)",
+    
+"Pagamento de mensalidade escolar.",
+"Aquisição de material escolar.",
+"Compra de uniforme escolar.",
+"Aquisição de livros didáticos.",
+"Participação em atividade extracurricular.",
+"Curso complementar ao desenvolvimento educacional.",
+"Atividade pedagógica especializada.",
+"Curso de informática.",
+"Curso de idiomas.",
+"Projeto educacional complementar.",
+"Material pedagógico para atividades escolares.",
+"Pagamento de transporte escolar.",
+"Participação em oficina educacional.",
+"Capacitação complementar.",
+"Despesas relacionadas à educação do beneficiário."
 
-    "Alimentação": [
-        "Aquisição de alimentos para consumo do beneficiário.",
-        "Compra de dieta especial.",
-        "Aquisição de alimentos recomendados por profissional de saúde."
-    ],
+],
 
-    "Vestuário": [
-        "Aquisição de roupas para uso diário.",
-        "Compra de calçados.",
-        "Aquisição de uniforme escolar.",
-        "Compra de vestuário infantil."
-    ],
+"Combustível": [
 
-    "Lazer": [
-        "Participação em atividade recreativa.",
-        "Atividade de inclusão social.",
-        "Passeio educativo.",
-        "Participação em evento cultural."
-    ],
+"Outro (descrever manualmente)",
+    
+"Deslocamento para sessão terapêutica em veículo próprio.",
+"Deslocamento para consulta médica em veículo próprio.",
+"Deslocamento para realização de exames.",
+"Deslocamento para atividade educacional.",
+"Deslocamento para acompanhamento especializado.",
+"Transporte para atendimento clínico.",
+"Deslocamento para fisioterapia.",
+"Deslocamento para atendimento multiprofissional.",
+"Viagem para tratamento médico.",
+"Deslocamento para atividade de inclusão social.",
+"Deslocamento para atividade recreativa supervisionada.",
+"Transporte do beneficiário para atendimento especializado.",
+"Deslocamento relacionado às necessidades do beneficiário.",
+"Transporte do beneficiário em veículo próprio.",
+"Transporte para atividade recomendada por profissional de saúde."
 
-    "Outros": [
-        "Despesa relacionada ao bem-estar do beneficiário.",
-        "Aquisição de item necessário ao dia a dia."
-    ]
+],
+
+"Uber / App": [
+
+"Outro (descrever manualmente)",
+
+"Transporte para sessão terapêutica.",
+"Transporte para consulta médica.",
+"Transporte para realização de exames.",
+"Transporte para atividade educacional.",
+"Transporte para acompanhamento especializado.",
+"Transporte para atividade recreativa.",
+"Retorno para residência após sessão terapêutica.",
+"Retorno para residência após consulta médica.",
+"Retorno para residência após atividade educacional.",
+"Retorno para residência após realização de exames.",
+"Deslocamento do beneficiário por transporte por aplicativo.",
+"Transporte para tratamento especializado.",
+"Locomoção para atividade de inclusão social.",
+"Transporte para atendimento clínico.",
+"Deslocamento relacionado às necessidades do beneficiário."
+
+],
+
+"Farmácia": [
+
+"Outro (descrever manualmente)",
+    
+"Aquisição de medicamentos prescritos.",
+"Compra de medicamentos de uso contínuo.",
+"Aquisição de suplementos nutricionais.",
+"Compra de vitaminas.",
+"Aquisição de insumos para tratamento.",
+"Compra de produtos farmacêuticos.",
+"Compra de fraldas descartáveis.",
+"Aquisição de lenços umedecidos.",
+"Compra de material para curativos.",
+"Aquisição de pomadas terapêuticas.",
+"Compra de itens de higiene pessoal.",
+"Aquisição de produtos recomendados por profissional de saúde.",
+"Compra de fórmula nutricional.",
+"Aquisição de itens para cuidados especiais.",
+"Compra de materiais auxiliares para tratamento."
+
+],
+
+"Alimentação": [
+
+"Outro (descrever manualmente)",
+    
+"Aquisição de alimentos para consumo do beneficiário.",
+"Compra de dieta especial.",
+"Compra de alimentos recomendados por profissional de saúde.",
+"Aquisição de suplementos alimentares.",
+"Compra de fórmula nutricional.",
+"Manutenção nutricional do beneficiário.",
+"Aquisição de alimentos sem lactose.",
+"Aquisição de alimentos sem glúten.",
+"Compra de produtos dietéticos.",
+"Compra de frutas e verduras.",
+"Aquisição de gêneros alimentícios.",
+"Compra de alimentos durante tratamento médico.",
+"Alimentação relacionada às necessidades nutricionais específicas.",
+"Aquisição de produtos nutricionais.",
+"Compra de alimentação para atividade terapêutica prolongada."
+
+],
+
+"Vestuário": [
+
+"Outro (descrever manualmente)",
+    
+"Aquisição de roupas para uso diário.",
+"Compra de calçados.",
+"Aquisição de uniforme escolar.",
+"Compra de roupas infantis.",
+"Aquisição de agasalhos.",
+"Compra de tênis.",
+"Aquisição de sandálias.",
+"Reposição de vestuário do beneficiário.",
+"Aquisição de roupas adequadas à estação.",
+"Compra de vestuário para atividade escolar.",
+"Aquisição de acessórios de vestuário.",
+"Compra de mochila escolar.",
+"Aquisição de roupas para atividade esportiva.",
+"Compra de itens essenciais de vestuário.",
+"Despesa relacionada ao vestuário do beneficiário."
+
+],
+
+"Lazer": [
+
+"Outro (descrever manualmente)",
+    
+"Participação em atividade recreativa.",
+"Participação em atividade de inclusão social.",
+"Passeio educativo.",
+"Participação em evento cultural.",
+"Aquisição de brinquedo educativo.",
+"Aquisição de material recreativo.",
+"Atividade esportiva supervisionada.",
+"Participação em oficina recreativa.",
+"Participação em evento infantil.",
+"Visita a espaço cultural.",
+"Atividade de integração social.",
+"Aquisição de jogos educativos.",
+"Atividade de entretenimento do beneficiário.",
+"Participação em programa recreativo.",
+"Despesa voltada ao lazer e bem-estar do beneficiário."
+
+],
+
+"Outros": [
+
+"Outro (descrever manualmente)",
+    
+"Aquisição de item necessário ao bem-estar do beneficiário.",
+"Compra de material de apoio.",
+"Aquisição de equipamento auxiliar.",
+"Despesa relacionada à qualidade de vida do beneficiário.",
+"Compra de item de necessidade pessoal.",
+"Aquisição de recurso de acessibilidade.",
+"Compra de produto complementar ao tratamento.",
+"Aquisição de material complementar.",
+"Item utilizado para apoio às atividades do beneficiário.",
+"Despesa vinculada às necessidades específicas do beneficiário.",
+"Compra de utensílio de uso pessoal.",
+"Aquisição de equipamento de apoio doméstico.",
+"Despesa relacionada à inclusão social.",
+"Compra de item recomendado por profissional especializado.",
+"Despesa complementar para manutenção do bem-estar do beneficiário."
+
+]
+
 };
 
             // Carrega os dados salvos ao abrir o app
@@ -139,11 +277,26 @@
                 }
                 
                 // Reseta o formulário
-                setNovaDespesa({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
+                setNovaDespesa({
+    categoria: 'Terapia',
+    justificativaModelo: '',
+    data: '',
+    valor: '',
+    justificativa: '',
+    anexo: ''
+});
             };
 
             const handleEdit = (index) => {
-                setNovaDespesa(despesas[index]);
+                setNovaDespesa({
+
+    ...despesas[index],
+
+    justificativaModelo:
+        despesas[index].justificativaModelo ||
+        despesas[index].justificativa
+
+});
                 setEditingIndex(index);
                 setFormError('');
                 window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe a tela para o formulário
@@ -162,7 +315,14 @@
                 setDespesas(despesas.filter((_, i) => i !== index));
                 if (editingIndex === index) {
                     setEditingIndex(null);
-                    setNovaDespesa({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
+                    setNovaDespesa({
+    categoria: 'Terapia',
+    justificativaModelo: '',
+    data: '',
+    valor: '',
+    justificativa: '',
+    anexo: ''
+});
                 }
             };
 
@@ -313,20 +473,48 @@
                             <h2 className="text-lg font-bold text-gray-700 px-2 flex justify-between items-center">
                                 <span>{editingIndex !== null ? '✏️ Editando Despesa' : '➕ Nova Despesa'}</span>
                                 {editingIndex !== null && (
-                                    <button onClick={() => {setEditingIndex(null); setNovaDespesa({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' })}} className="text-sm font-normal text-gray-500 hover:text-red-500 bg-gray-100 px-3 py-1 rounded-full transition-colors">
+                                    <button onClick={() => {setEditingIndex(null); setNovaDespesa({
+    categoria: 'Terapia',
+    justificativaModelo: '',
+    data: '',
+    valor: '',
+    justificativa: '',
+    anexo: ''
+})}} className="text-sm font-normal text-gray-500 hover:text-red-500 bg-gray-100 px-3 py-1 rounded-full transition-colors">
                                         Cancelar Edição
                                     </button>
                                 )}
                             </h2>
                             
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <select className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none bg-white" value={novaDespesa.categoria} onChange={e => setNovaDespesa({...novaDespesa, categoria: e.target.value})}>
+                                <select
+    className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none bg-white"
+    value={novaDespesa.categoria}
+
+    onChange={e =>
+
+        setNovaDespesa({
+
+            ...novaDespesa,
+
+            categoria: e.target.value,
+
+            justificativaModelo: '',
+
+            justificativa: ''
+
+        })
+
+    }
+>
                                     <option value="Terapia">Terapia / Consulta</option>
                                     <option value="Escola / Cursos">Escola / Cursos</option>
                                     <option value="Combustível">Combustível</option>
                                     <option value="Uber / App">Uber / App</option>
                                     <option value="Farmácia">Farmácia</option>
                                     <option value="Alimentação">Alimentação</option>
+                                    <option value="Vestuário">Vestuário</option>
+                                    <option value="Lazer">Lazer</option>
                                     <option value="Outros">Outros</option>
                                 </select>
                                 <input type="date" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" value={novaDespesa.data} onChange={e => setNovaDespesa({...novaDespesa, data: e.target.value})} />
@@ -342,21 +530,39 @@
         outline-none
     "
 
-    value={novaDespesa.justificativaModelo}
+    value={novaDespesa.justificativaModelo || ''}
 
     onChange={(e)=>{
+
+    const valor = e.target.value;
+
+    if(valor === "Outro (descrever manualmente)"){
 
         setNovaDespesa({
 
             ...novaDespesa,
 
-            justificativaModelo:e.target.value,
+            justificativaModelo: valor,
 
-            justificativa:e.target.value
+            justificativa: ''
 
         });
 
-    }}
+    } else {
+
+        setNovaDespesa({
+
+            ...novaDespesa,
+
+            justificativaModelo: valor,
+
+            justificativa: valor
+
+        });
+
+    }
+
+}}
 
 >
 
