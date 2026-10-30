@@ -25,7 +25,7 @@
 
         function ControleDespesas() {
             const [formData, setFormData] = useState({
-                beneficiario: '', cpfBeneficiario: '', representante: '', cpfRepresentante: '', endereco: '', mesAno: ''
+                beneficiario: '', cpfBeneficiario: '', representante: '', cpfRepresentante: '', endereco: '', mes: '', ano: new Date().getFullYear()
             });
             const [despesas, setDespesas] = useState([]);
             const [novaDespesa, setNovaDespesa] = useState({ categoria: 'Terapia', data: '', valor: '', justificativa: '', anexo: '' });
@@ -118,7 +118,7 @@
                     
                     const opt = {
                         margin:       [5, 5, 10, 5], // 5 milímetros no topo e laterais. 10mm no rodapé.
-                        filename:     `Relatorio_Despesas_${formData.beneficiario || 'Requerente'}_${(formData.mesAno || 'Mes').replace('/', '-')}.pdf`,
+                        filename:     `Relatorio_Despesas_${formData.beneficiario || 'Requerente'}_${`${formData.mes || 'Mes'}_${formData.ano || ''}`.pdf`,
                         image:        { type: 'jpeg', quality: 0.98 },
                         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -179,7 +179,57 @@
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <input className="border p-3 rounded-2xl w-full bg-slate-50 focus:ring-2 focus:ring-blue-400 outline-none transition-all" placeholder="Beneficiário (Criança)" value={formData.beneficiario} onChange={e => setFormData({...formData, beneficiario: e.target.value})} />
                                 <input className="border p-3 rounded-2xl w-full bg-slate-50 focus:ring-2 focus:ring-blue-400 outline-none transition-all" placeholder="CPF do Beneficiário" value={formData.cpfBeneficiario} onChange={e => setFormData({...formData, cpfBeneficiario: e.target.value})} />
-                                <input className="border p-3 rounded-2xl w-full focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="Mês/Ano Ref. (Ex: 10/2026)" value={formData.mesAno} onChange={e => setFormData({...formData, mesAno: e.target.value})} />
+                                <div className="flex gap-2">
+
+    <select
+        className="border p-3 rounded-2xl flex-1"
+        value={formData.mes}
+        onChange={e =>
+            setFormData({
+                ...formData,
+                mes: e.target.value
+            })
+        }
+    >
+
+        <option value="">Mês</option>
+
+        <option value="Janeiro">Janeiro</option>
+        <option value="Fevereiro">Fevereiro</option>
+        <option value="Março">Março</option>
+        <option value="Abril">Abril</option>
+        <option value="Maio">Maio</option>
+        <option value="Junho">Junho</option>
+        <option value="Julho">Julho</option>
+        <option value="Agosto">Agosto</option>
+        <option value="Setembro">Setembro</option>
+        <option value="Outubro">Outubro</option>
+        <option value="Novembro">Novembro</option>
+        <option value="Dezembro">Dezembro</option>
+
+    </select>
+
+    <select
+        className="border p-3 rounded-2xl w-32"
+        value={formData.ano}
+        onChange={e =>
+            setFormData({
+                ...formData,
+                ano: e.target.value
+            })
+        }
+    >
+        {Array.from(
+            { length: 15 },
+            (_, i) => 2020 + i
+        ).map(ano => (
+            <option key={ano} value={ano}>
+                {ano}
+            </option>
+        ))}
+    </select>
+
+</div>
                                 <input className="border p-3 rounded-2xl w-full focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="Representante Legal" value={formData.representante} onChange={e => setFormData({...formData, representante: e.target.value})} />
                                 <input className="border p-3 rounded-2xl w-full focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="CPF do Representante" value={formData.cpfRepresentante} onChange={e => setFormData({...formData, cpfRepresentante: e.target.value})} />
                                 <input className="border p-3 rounded-2xl w-full md:col-span-2 focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="Endereço Completo" value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})} />
@@ -297,7 +347,11 @@
                             <div className="flex justify-between items-end mt-1 pt-1 border-t border-slate-200">
                                 <div>
                                     <p className="text-[9px] text-slate-500 font-bold uppercase leading-none mb-0.5">Mês/Ano Ref.</p>
-                                    <p className="font-bold text-gray-800 text-xs leading-none">{formData.mesAno || '___/___'}</p>
+                                    <p className="font-bold text-gray-800 text-xs leading-none">
+    {formData.mes
+        ? `${formData.mes} / ${formData.ano}`
+        : 'Não informado'}
+</p>
                                 </div>
                                 <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded border border-blue-200 flex flex-col justify-center">
                                     <p className="text-[9px] font-bold uppercase leading-none mb-0.5">Total Comprovado</p>
