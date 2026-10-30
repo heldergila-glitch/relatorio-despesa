@@ -118,7 +118,7 @@
                     
                     const opt = {
                         margin:       [5, 5, 10, 5], // 5 milímetros no topo e laterais. 10mm no rodapé.
-                        filename:     `Relatorio_Despesas_${formData.beneficiario || 'Requerente'}_${`${formData.mes || 'Mes'}_${formData.ano || ''}`.pdf`,
+                        filename: `Relatorio_Despesas_${formData.beneficiario || 'Requerente'}_${formData.mes || 'Mes'}_${formData.ano}.pdf`,
                         image:        { type: 'jpeg', quality: 0.98 },
                         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
