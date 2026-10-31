@@ -585,7 +585,32 @@
 
 </select>
                                 <textarea rows="2" className="border p-3 rounded-2xl md:col-span-3 focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Justificativa (Ex: Sessão de fonoaudiologia...)" value={novaDespesa.justificativa} onChange={e => setNovaDespesa({...novaDespesa, justificativa: e.target.value})}></textarea>
-                                
+                                <div className="md:col-span-3">
+    <a
+        href="pdf-converter.html"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+            block
+            w-full
+            text-center
+            bg-indigo-600
+            hover:bg-indigo-700
+            text-white
+            font-bold
+            p-3
+            rounded-2xl
+            transition-all
+            shadow-sm
+        "
+    >
+        📄➡️🖼️ Converter PDF para Anexo de Imagem
+    </a>
+
+    <p className="text-xs text-gray-500 mt-2 text-center">
+        Use esta opção caso o comprovante esteja em PDF.
+    </p>
+</div>
                                 <div className="md:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 border-dashed flex items-center justify-between">
                                     <div className="flex-1 w-full">
                                         <label className="block text-sm font-bold text-gray-600 mb-2">📸 Anexar Comprovante (Foto ou Print)</label>
@@ -628,28 +653,7 @@
                                         </div>
                                     </div>
                                 ))}
-
-                                <a
-    href="pdf-converter.html"
-    className="
-        w-full
-        block
-        mt-6
-        text-center
-        bg-indigo-600
-        hover:bg-indigo-700
-        text-white
-        p-4
-        rounded-3xl
-        font-black
-        text-lg
-        transition-all
-        shadow-lg
-        hover:shadow-xl
-    "
->
-    🖼️ Converter PDF em Imagens
-</a>
+                                
                                 <button onClick={generatePDF} disabled={isGenerating} className="w-full mt-6 bg-green-500 text-white p-4 rounded-3xl font-black text-lg hover:bg-green-600 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl flex justify-center items-center gap-2 border-b-4 border-green-700 active:border-b-0 active:translate-y-1">
                                     {isGenerating ? (
                                         <span className="flex items-center gap-2">
