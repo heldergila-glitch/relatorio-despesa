@@ -29,14 +29,12 @@
             });
             const [despesas, setDespesas] = useState([]);
             const [novaDespesa, setNovaDespesa] = useState({
-
     categoria: 'Terapia',
     justificativaModelo: '',
     data: '',
     valor: '',
     justificativa: '',
-    anexo: ''
-
+    anexos: []
 });
             const [isGenerating, setIsGenerating] = useState(false);
             const [editingIndex, setEditingIndex] = useState(null);
@@ -277,13 +275,13 @@
                 }
                 
                 // Reseta o formulário
-                setNovaDespesa({
+               setNovaDespesa({
     categoria: 'Terapia',
     justificativaModelo: '',
     data: '',
     valor: '',
     justificativa: '',
-    anexo: ''
+    anexos: []
 });
             };
 
@@ -303,25 +301,85 @@
             };
 
             const handleImageUpload = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => setNovaDespesa({ ...novaDespesa, anexo: reader.result });
-                    reader.readAsDataURL(file);
+
+    const arquivos = Array.from(e.target.files);
+
+    arquivos.forEach(file => {
+
+        const reader = new FileReader();
+
+        reader.onload = event => {
+
+            const img = new Image();
+
+            img.onload = () => {
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                const larguraMaxima = 1600;
+
+                let largura = img.width;
+                let altura = img.height;
+
+                if (largura > larguraMaxima) {
+
+                    altura *= larguraMaxima / largura;
+                    largura = larguraMaxima;
+
                 }
+
+                canvas.width = largura;
+                canvas.height = altura;
+
+                ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    largura,
+                    altura
+                );
+
+                const imagemComprimida =
+                    canvas.toDataURL(
+                        'image/jpeg',
+                        0.75
+                    );
+
+                setNovaDespesa(prev => ({
+
+                    ...prev,
+
+                    anexos: [
+                        ...(prev.anexos || []),
+                        imagemComprimida
+                    ]
+
+                }));
+
             };
+
+            img.src = event.target.result;
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+
+};
 
             const removerDespesa = (index) => {
                 setDespesas(despesas.filter((_, i) => i !== index));
                 if (editingIndex === index) {
                     setEditingIndex(null);
-                    setNovaDespesa({
+                   setNovaDespesa({
     categoria: 'Terapia',
     justificativaModelo: '',
     data: '',
     valor: '',
     justificativa: '',
-    anexo: ''
+    anexos: []
 });
                 }
             };
@@ -479,7 +537,7 @@
     data: '',
     valor: '',
     justificativa: '',
-    anexo: ''
+    anexos: []
 })}} className="text-sm font-normal text-gray-500 hover:text-red-500 bg-gray-100 px-3 py-1 rounded-full transition-colors">
                                         Cancelar Edição
                                     </button>
@@ -614,9 +672,61 @@
                                 <div className="md:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 border-dashed flex items-center justify-between">
                                     <div className="flex-1 w-full">
                                         <label className="block text-sm font-bold text-gray-600 mb-2">📸 Anexar Comprovante (Foto ou Print)</label>
-                                        <input type="file" accept="image/*,application/pdf" className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer transition-colors" onChange={handleImageUpload} />
+                                        <div className="flex gap-2">
+
+    <label className="flex-1">
+
+        <input
+    type="file"
+    accept="image/*"
+    capture="environment"
+    multiple={false}
+            className="hidden"
+            onChange={handleImageUpload}
+        />
+
+        <div className="bg-green-600 text-white text-center p-3 rounded-xl cursor-pointer font-bold">
+            📷 Tirar Foto
+        </div>
+
+    </label>
+
+    <label className="flex-1">
+
+        <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handleImageUpload}
+        />
+
+        <div className="bg-blue-600 text-white text-center p-3 rounded-xl cursor-pointer font-bold">
+            📁 Escolher Arquivo
+        </div>
+
+    </label>
+
+</div> 
                                     </div>
-                                    {novaDespesa.anexo && <img src={novaDespesa.anexo} className="h-14 w-14 object-cover rounded-lg border ml-2" alt="mini" />}
+                                    {novaDespesa.anexos?.length > 0 && (
+
+    <div className="flex flex-wrap gap-2 ml-2 mt-3">
+
+        {novaDespesa.anexos.map((img, idx) => (
+
+            <img
+                key={idx}
+                src={img}
+                alt={`Anexos ${idx + 1}`}
+                className="h-14 w-14 object-cover rounded-lg border"
+            />
+
+        ))}
+
+    </div>
+
+)}
                                 </div>
                                 
                                 {formError && <div className="md:col-span-3 text-red-500 font-semibold px-2 text-sm text-center animate-pulse">{formError}</div>}
@@ -727,12 +837,30 @@
                                         <span className="font-bold text-blue-800">JUSTIFICATIVA:</span> <span className="font-normal">{d.justificativa}</span>
                                     </div>
 
-                                    {d.anexo && (
-                                        <div className="flex justify-center mt-1">
-                                            {/* ALTURA DA IMAGEM MANTIDA EM 600px */}
-                                            <img src={d.anexo} alt="Comprovante" className="max-w-full max-h-[800px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50" />
-                                        </div>
-                                    )}
+                                    {d.anexos?.length > 0 && (
+
+    <div className="space-y-2 mt-2">
+
+        {d.anexos.map((img, idx) => (
+
+            <div
+                key={idx}
+                className="flex justify-center"
+            >
+
+                <img
+                    src={img}
+                    alt={`Comprovante ${idx + 1}`}
+                    className="max-w-full max-h-[800px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50"
+                />
+
+            </div>
+
+        ))}
+
+    </div>
+
+)}
                                 </div>
                             ))}
                         </div>
