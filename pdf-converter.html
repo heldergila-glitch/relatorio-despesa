@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversor de PDF para Imagem</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+  <!-- JSZip & FileSaver -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Header -->
+  <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-brand-500 text-white rounded-xl shadow-md shadow-brand-500/20">
+          <i data-lucide="file-image" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight">PDF to Image Studio</h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Converta páginas de PDF em Imagens</p>
+        </div>
+      </div>
+      
+      <button id="themeToggleBtn" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
+        <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+        <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    
+    <!-- Area de Upload -->
+    <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 rounded-2xl p-8 sm:p-12 text-center bg-white dark:bg-slate-800/50 shadow-sm hover:shadow-md transition-all cursor-pointer relative group">
+      <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden">
+      
+      <div class="flex flex-col items-center space-y-4">
+        <div class="p-4 bg-brand-50 dark:bg-slate-800 text-brand-600 rounded-full group-hover:scale-110 transition-transform">
+          <i data-lucide="upload-cloud" class="w-10 h-10"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Arraste seu arquivo PDF aqui</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">ou clique para selecionar do seu dispositivo</p>
+        </div>
+        <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+          Processamento 100% Local & Seguro
+        </div>
+      </div>
+    </div>
+
+    <!-- Painel Principal (Escondido inicialmente) -->
+    <div id="appDashboard" class="hidden space-y-8">
+      
+      <!-- Barra de Informações do Arquivo e Configurações -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-700/80 space-y-6">
+        
+        <!-- Header do Arquivo Selecionado -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-700">
+          <div class="flex items-center space-x-3">
+            <div class="p-3 bg-red-50 dark:bg-red-950/40 text-red-600 rounded-xl">
+              <i data-lucide="file-text" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h2 id="pdfFileName" class="font-semibold text-slate-900 dark:text-white truncate max-w-xs sm:max-w-md">documento.pdf</h2>
+              <p id="pdfMetaInfo" class="text-xs text-slate-500">Aguardando leitura...</p>
+            </div>
+          </div>
+          <button id="changeFileBtn" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors border border-slate-200 dark:border-slate-700">
+            Trocar Arquivo
+          </button>
+        </div>
+
+        <!-- Opções de Exportação -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <!-- Páginas por Imagem (Layout) -->
+          <div>
+            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Páginas por Imagem</label>
+            <select id="layoutSelect" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="1">1 Página por imagem</option>
+              <option value="2" selected>2 Páginas por imagem (Lado a lado)</option>
+              <option value="4">4 Páginas por imagem (Grid 2x2)</option>
+            </select>
+          </div>
+
+          <!-- Formato -->
+          <div>
+            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Formato da Imagem</label>
+            <select id="formatSelect" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="image/png">PNG (Qualidade sem perdas)</option>
+              <option value="image/jpeg">JPG (Arquivo menor)</option>
+              <option value="image/webp">WEBP (Otimizado)</option>
+            </select>
+          </div>
+
+          <!-- Resolução / DPI -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">Resolução / Escala</label>
+              <span id="scaleVal" class="text-xs text-brand-600 dark:text-brand-400 font-semibold">2x (144 DPI)</span>
+            </div>
+            <input type="range" id="scaleInput" min="1" max="3" step="0.5" value="2" class="w-full accent-brand-500">
+          </div>
+
+          <!-- Intervalo de Páginas -->
+          <div>
+            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2">Páginas Específicas</label>
+            <input type="text" id="pageRangeInput" placeholder="Ex: 1-5, 8, 11-13" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <!-- Botões de Ação Principal -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+          <button id="processBtn" class="flex-1 sm:flex-none inline-flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white font-medium px-6 py-2.5 rounded-xl shadow-lg shadow-brand-500/25 transition-all">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Gerar Imagens</span>
+          </button>
+
+          <button id="downloadZipBtn" disabled class="flex-1 sm:flex-none inline-flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all">
+            <i data-lucide="archive" class="w-4 h-4"></i>
+            <span>Baixar Tudo em ZIP</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Barra de Progresso -->
+      <div id="progressContainer" class="hidden bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 space-y-2">
+        <div class="flex justify-between text-xs font-medium">
+          <span id="progressText" class="text-slate-600 dark:text-slate-300">Processando...</span>
+          <span id="progressPercent" class="text-brand-600 dark:text-brand-400">0%</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+          <div id="progressBar" class="bg-brand-500 h-full w-0 transition-all duration-200"></div>
+        </div>
+      </div>
+
+      <!-- Grid de Imagens Convertidas -->
+      <div>
+        <h3 class="text-base font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center justify-between">
+          <span>Imagens Geradas</span>
+          <span id="renderedCount" class="text-xs text-slate-500 font-normal"></span>
+        </h3>
+        <div id="imagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Inicializa os ícones do Lucide
+    lucide.createIcons();
+
+    // Configuração do PDF.js Worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // Elementos DOM
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const dropZone = document.getElementById('dropZone');
+    const pdfFileInput = document.getElementById('pdfFileInput');
+    const appDashboard = document.getElementById('appDashboard');
+    const pdfFileName = document.getElementById('pdfFileName');
+    const pdfMetaInfo = document.getElementById('pdfMetaInfo');
+    const changeFileBtn = document.getElementById('changeFileBtn');
+    
+    const layoutSelect = document.getElementById('layoutSelect');
+    const formatSelect = document.getElementById('formatSelect');
+    const scaleInput = document.getElementById('scaleInput');
+    const scaleVal = document.getElementById('scaleVal');
+    const pageRangeInput = document.getElementById('pageRangeInput');
+    
+    const processBtn = document.getElementById('processBtn');
+    const downloadZipBtn = document.getElementById('downloadZipBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const progressPercent = document.getElementById('progressPercent');
+    const imagesGrid = document.getElementById('imagesGrid');
+    const renderedCount = document.getElementById('renderedCount');
+
+    // Estado da Aplicação
+    let currentPdfDoc = null;
+    let currentFile = null;
+    let renderedBlobs = [];
+
+    // Modo Escuro / Claro
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+
+    // Eventos de Upload (Drag & Drop)
+    dropZone.addEventListener('click', () => pdfFileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-brand-500', 'bg-brand-50/50');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('border-brand-500', 'bg-brand-50/50');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-brand-500', 'bg-brand-50/50');
+      if (e.dataTransfer.files.length) {
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+    pdfFileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+
+    changeFileBtn.addEventListener('click', () => {
+      pdfFileInput.click();
+    });
+
+    // Atualização visual do slider de escala
+    scaleInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      const dpi = Math.round(val * 72);
+      scaleVal.textContent = `${val}x (${dpi} DPI)`;
+    });
+
+    // Leitura Inicial do Arquivo PDF
+    async function handleFileSelect(file) {
+      if (file.type !== 'application/pdf') {
+        alert('Por favor, selecione um arquivo PDF válido.');
+        return;
+      }
+      
+      currentFile = file;
+      pdfFileName.textContent = file.name;
+      
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        currentPdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        
+        pdfMetaInfo.textContent = `${currentPdfDoc.numPages} páginas • ${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+        
+        dropZone.classList.add('hidden');
+        appDashboard.classList.remove('hidden');
+        
+        // Processa as imagens automaticamente no upload
+        startRendering();
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao carregar o arquivo PDF.');
+      }
+    }
+
+    processBtn.addEventListener('click', () => {
+      if (currentPdfDoc) startRendering();
+    });
+
+    // Função de Análise do Intervalo de Páginas
+    function parsePageRange(rangeStr, totalPages) {
+      if (!rangeStr.trim()) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+      }
+      
+      const pages = new Set();
+      const parts = rangeStr.split(',');
+      
+      for (const part of parts) {
+        const clean = part.trim();
+        if (clean.includes('-')) {
+          const [start, end] = clean.split('-').map(Number);
+          if (start && end) {
+            for (let i = Math.max(1, start); i <= Math.min(totalPages, end); i++) {
+              pages.add(i);
+            }
+          }
+        } else {
+          const pageNum = Number(clean);
+          if (pageNum && pageNum >= 1 && pageNum <= totalPages) {
+            pages.add(pageNum);
+          }
+        }
+      }
+      
+      return Array.from(pages).sort((a, b) => a - b);
+    }
+
+    // Processamento das Páginas e Composição dos Layouts
+    async function startRendering() {
+      if (!currentPdfDoc) return;
+      
+      renderedBlobs = [];
+      imagesGrid.innerHTML = '';
+      downloadZipBtn.disabled = true;
+      
+      const layoutPagesPerImg = parseInt(layoutSelect.value);
+      const mimeType = formatSelect.value;
+      const scale = parseFloat(scaleInput.value);
+      const ext = mimeType.split('/')[1] === 'jpeg' ? 'jpg' : mimeType.split('/')[1];
+      
+      const targetPages = parsePageRange(pageRangeInput.value, currentPdfDoc.numPages);
+      
+      if (targetPages.length === 0) {
+        alert('Nenhuma página válida foi selecionada no intervalo.');
+        return;
+      }
+
+      // Agrupa as páginas selecionadas com base no Layout
+      const pageGroups = [];
+      for (let i = 0; i < targetPages.length; i += layoutPagesPerImg) {
+        pageGroups.push(targetPages.slice(i, i + layoutPagesPerImg));
+      }
+
+      progressContainer.classList.remove('hidden');
+      processBtn.disabled = true;
+
+      for (let gIndex = 0; gIndex < pageGroups.length; gIndex++) {
+        const group = pageGroups[gIndex];
+        
+        // Atualiza Progresso
+        const pct = Math.round(((gIndex + 1) / pageGroups.length) * 100);
+        progressBar.style.width = `${pct}%`;
+        progressPercent.textContent = `${pct}%`;
+        progressText.textContent = `Renderizando imagem ${gIndex + 1} de ${pageGroups.length}...`;
+
+        // Renderiza cada página do grupo em um Canvas temporário
+        const renderedCanvasList = [];
+        for (const pageNum of group) {
+          const page = await currentPdfDoc.getPage(pageNum);
+          const viewport = page.getViewport({ scale });
+          
+          const tempCanvas = document.createElement('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+          tempCanvas.width = viewport.width;
+          tempCanvas.height = viewport.height;
+          
+          await page.render({ canvasContext: tempCtx, viewport }).promise;
+          renderedCanvasList.push(tempCanvas);
+        }
+
+        // Cria o Canvas Final unificado para o Layout N-up
+        const finalCanvas = document.createElement('canvas');
+        const finalCtx = finalCanvas.getContext('2d');
+
+        if (layoutPagesPerImg === 1) {
+          const single = renderedCanvasList[0];
+          finalCanvas.width = single.width;
+          finalCanvas.height = single.height;
+          finalCtx.fillStyle = '#FFFFFF';
+          finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+          finalCtx.drawImage(single, 0, 0);
+
+        } else if (layoutPagesPerImg === 2) {
+          // Lado a Lado (Horizontal)
+          const w1 = renderedCanvasList[0].width;
+          const h1 = renderedCanvasList[0].height;
+          const w2 = renderedCanvasList[1] ? renderedCanvasList[1].width : w1;
+          const h2 = renderedCanvasList[1] ? renderedCanvasList[1].height : h1;
+
+          const targetH = Math.max(h1, h2);
+          const scaledW1 = w1 * (targetH / h1);
+          const scaledW2 = w2 * (targetH / h2);
+
+          finalCanvas.width = scaledW1 + scaledW2;
+          finalCanvas.height = targetH;
+          
+          finalCtx.fillStyle = '#FFFFFF';
+          finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+          
+          finalCtx.drawImage(renderedCanvasList[0], 0, 0, scaledW1, targetH);
+          if (renderedCanvasList[1]) {
+            finalCtx.drawImage(renderedCanvasList[1], scaledW1, 0, scaledW2, targetH);
+          }
+
+        } else if (layoutPagesPerImg === 4) {
+          // Grid 2x2
+          const maxW = Math.max(...renderedCanvasList.map(c => c.width));
+          const maxH = Math.max(...renderedCanvasList.map(c => c.height));
+
+          finalCanvas.width = maxW * 2;
+          finalCanvas.height = maxH * 2;
+          
+          finalCtx.fillStyle = '#FFFFFF';
+          finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+          const positions = [
+            [0, 0],
+            [maxW, 0],
+            [0, maxH],
+            [maxW, maxH]
+          ];
+
+          renderedCanvasList.forEach((canv, idx) => {
+            const [x, y] = positions[idx];
+            finalCtx.drawImage(canv, x, y, maxW, maxH);
+          });
+        }
+
+        // Converte o canvas final para Blob
+        const blob = await new Promise(resolve => finalCanvas.toBlob(resolve, mimeType, 0.92));
+        
+        const labelPaginacao = group.length === 1 
+          ? `Página ${group[0]}` 
+          : `Páginas ${group[0]} - ${group[group.length - 1]}`;
+
+        const fileName = `${currentFile.name.replace('.pdf', '')}_${labelPaginacao.replace(/\s+/g, '')}.${ext}`;
+
+        renderedBlobs.push({ blob, fileName });
+
+        // Adiciona Card à Interface
+        createImageCard(finalCanvas.toDataURL(mimeType), labelPaginacao, fileName, blob);
+      }
+
+      progressContainer.classList.add('hidden');
+      processBtn.disabled = false;
+      downloadZipBtn.disabled = false;
+      renderedCount.textContent = `${renderedBlobs.length} arquivo(s) gerado(s)`;
+    }
+
+    // Criação do Elemento Visual do Card da Imagem
+    function createImageCard(dataUrl, title, fileName, blob) {
+      const card = document.createElement('div');
+      card.className = "bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex flex-col";
+      
+      card.innerHTML = `
+        <div class="p-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 flex justify-between items-center">
+          <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">${title}</span>
+          <span class="text-[10px] text-slate-400 upper">${fileName.split('.').pop()}</span>
+        </div>
+        <div class="p-4 flex-1 flex items-center justify-center bg-slate-100/50 dark:bg-slate-900/20 max-h-80 overflow-hidden">
+          <img src="${dataUrl}" class="max-h-full max-w-full object-contain shadow-sm rounded" alt="${title}" />
+        </div>
+        <div class="p-3 border-t border-slate-100 dark:border-slate-700">
+          <button class="download-btn w-full inline-flex items-center justify-center space-x-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 text-slate-700 dark:text-slate-200 text-xs font-medium py-2 rounded-lg transition-colors">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Baixar Imagem</span>
+          </button>
+        </div>
+      `;
+
+      card.querySelector('.download-btn').addEventListener('click', () => {
+        saveAs(blob, fileName);
+      });
+
+      imagesGrid.appendChild(card);
+      lucide.createIcons();
+    }
+
+    // Download em Arquivo ZIP
+    downloadZipBtn.addEventListener('click', async () => {
+      if (!renderedBlobs.length) return;
+
+      const zip = new JSZip();
+      renderedBlobs.forEach(item => {
+        zip.file(item.fileName, item.blob);
+      });
+
+      const zipContent = await zip.generateAsync({ type: "blob" });
+      const zipName = `${currentFile.name.replace('.pdf', '')}_imagens.zip`;
+      saveAs(zipContent, zipName);
+    });
+  </script>
+</body>
+</html>
