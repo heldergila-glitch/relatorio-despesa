@@ -33,6 +33,11 @@
     justificativaModelo: '',
     data: '',
     valor: '',
+
+    kmPercorrido: '',
+consumoKmLitro: '10',
+precoCombustivel: '',
+
     justificativa: '',
     anexos: []
 });
@@ -280,6 +285,11 @@
     justificativaModelo: '',
     data: '',
     valor: '',
+
+    kmPercorrido: '',
+consumoKmLitro: '10',
+precoCombustivel: '',
+
     justificativa: '',
     anexos: []
 });
@@ -378,19 +388,94 @@
     justificativaModelo: '',
     data: '',
     valor: '',
+
+    kmPercorrido: '',
+    consumoKmLitro: '10',
+    precoCombustivel: '',
+
     justificativa: '',
     anexos: []
 });
                 }
             };
 
-            // Função segura para converter número em Moeda (R$)
-            const formatCurrency = (val) => {
-                const num = parseFloat(val);
-                return isNaN(num) ? 'R$ 0,00' : num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            };
+            const calcularCombustivel = () => {
+
+    const km =
+        parseFloat(
+            novaDespesa.kmPercorrido
+        ) || 0;
+
+    const consumo =
+        parseFloat(
+            novaDespesa.consumoKmLitro
+        ) || 0;
+
+    const preco =
+        parseFloat(
+            novaDespesa.precoCombustivel
+        ) || 0;
+
+    if (
+        km <= 0 ||
+        consumo <= 0 ||
+        preco <= 0
+    ) {
+        return 0;
+    }
+
+    return (
+        km / consumo
+    ) * preco;
+
+};
+
+// Função segura para converter número em Moeda (R$)
+const formatCurrency = (val) => {
+
+    const num = parseFloat(val);
+
+    return isNaN(num)
+        ? 'R$ 0,00'
+        : num.toLocaleString(
+            'pt-BR',
+            {
+                style: 'currency',
+                currency: 'BRL'
+            }
+        );
+
+};
             
             const total = despesas.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+            useEffect(() => {
+
+    if (
+        novaDespesa.categoria ===
+        'Combustível'
+    ) {
+
+        const valor =
+            calcularCombustivel();
+
+        setNovaDespesa(prev => ({
+
+            ...prev,
+
+            valor:
+                valor > 0
+                    ? valor.toFixed(2)
+                    : ''
+
+        }));
+
+    }
+
+}, [
+    novaDespesa.kmPercorrido,
+    novaDespesa.consumoKmLitro,
+    novaDespesa.precoCombustivel
+]);
 
             const generatePDF = () => {
                 setIsGenerating(true);
@@ -531,11 +616,17 @@
                             <h2 className="text-lg font-bold text-gray-700 px-2 flex justify-between items-center">
                                 <span>{editingIndex !== null ? '✏️ Editando Despesa' : '➕ Nova Despesa'}</span>
                                 {editingIndex !== null && (
-                                    <button onClick={() => {setEditingIndex(null); setNovaDespesa({
+                                    <button onClick={() => {setEditingIndex(null); 
+                                                            setNovaDespesa({
     categoria: 'Terapia',
     justificativaModelo: '',
     data: '',
-    valor: '',
+    valor: '',                                                                
+    
+    kmPercorrido: '',
+    consumoKmLitro: '10',
+    precoCombustivel: '',
+                                                                
     justificativa: '',
     anexos: []
 })}} className="text-sm font-normal text-gray-500 hover:text-red-500 bg-gray-100 px-3 py-1 rounded-full transition-colors">
@@ -575,6 +666,162 @@
                                     <option value="Lazer">Lazer</option>
                                     <option value="Outros">Outros</option>
                                 </select>
+                                {
+novaDespesa.categoria ===
+'Combustível' && (
+
+<div
+className="
+md:col-span-3
+bg-blue-50
+border
+border-blue-200
+rounded-2xl
+p-4
+"
+>
+
+<h3
+className="
+font-bold
+text-blue-700
+mb-3
+"
+>
+🚗 Cálculo do Combustível
+</h3>
+
+<div
+className="
+grid
+grid-cols-1
+md:grid-cols-3
+gap-3
+"
+>
+
+<input
+type="number"
+placeholder="KM percorrido"
+className="border p-3 rounded-xl"
+value={
+novaDespesa.kmPercorrido
+}
+onChange={e =>
+setNovaDespesa({
+
+...novaDespesa,
+
+kmPercorrido:
+e.target.value
+
+})
+}
+/>
+
+<input
+type="number"
+placeholder="Consumo (km/l)"
+className="border p-3 rounded-xl"
+value={
+novaDespesa.consumoKmLitro
+}
+onChange={e =>
+setNovaDespesa({
+
+...novaDespesa,
+
+consumoKmLitro:
+e.target.value
+
+})
+}
+/>
+
+<input
+type="number"
+step="0.01"
+placeholder="Preço combustível"
+className="border p-3 rounded-xl"
+value={
+novaDespesa.precoCombustivel
+}
+onChange={e =>
+setNovaDespesa({
+
+...novaDespesa,
+
+precoCombustivel:
+e.target.value
+
+})
+}
+/>
+
+</div>
+
+<div
+className="
+mt-4
+bg-white
+border
+rounded-xl
+p-3
+"
+>
+
+<p>
+
+Litros Consumidos:
+
+<strong>
+
+{' '}
+
+{(
+(
+parseFloat(
+novaDespesa.kmPercorrido
+) || 0
+)
+/
+(
+parseFloat(
+novaDespesa.consumoKmLitro
+) || 1
+)
+).toFixed(2)}
+
+L
+
+</strong>
+
+</p>
+
+<p
+className="
+text-lg
+font-bold
+text-green-700
+"
+>
+
+Valor Calculado:
+
+{' '}
+
+{formatCurrency(
+calcularCombustivel()
+)}
+
+</p>
+
+</div>
+
+</div>
+
+)
+}
                                 <input type="date" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" value={novaDespesa.data} onChange={e => setNovaDespesa({...novaDespesa, data: e.target.value})} />
                                 <input type="number" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Valor (R$)" value={novaDespesa.valor} onChange={e => setNovaDespesa({...novaDespesa, valor: e.target.value})} />
                                 <select
