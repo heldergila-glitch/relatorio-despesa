@@ -642,19 +642,25 @@ const formatCurrency = (val) => {
 
     onChange={e =>
 
-        setNovaDespesa({
+    setNovaDespesa({
 
-            ...novaDespesa,
+        ...novaDespesa,
 
-            categoria: e.target.value,
+        categoria: e.target.value,
 
-            justificativaModelo: '',
+        justificativaModelo: '',
 
-            justificativa: ''
+        justificativa: '',
 
-        })
+        kmPercorrido: '',
+        consumoKmLitro: '10',
+        precoCombustivel: '',
 
-    }
+        valor: ''
+
+    })
+
+}
 >
                                     <option value="Terapia">Terapia / Consulta</option>
                                     <option value="Escola / Cursos">Escola / Cursos</option>
@@ -690,7 +696,9 @@ mb-3
 >
 🚗 Cálculo do Combustível
 </h3>
-
+<p className="text-xs text-gray-500 mt-1">
+Valor = (KM percorrido ÷ Consumo km/l) × Preço do combustível
+</p>
 <div
 className="
 grid
@@ -1150,7 +1158,32 @@ calcularCombustivel()
                                     </div>
                                     
                                     <div className="bg-blue-50 border border-blue-100 rounded-md p-1.5 mb-1.5 text-[11px] text-gray-700 leading-tight">
-                                        <span className="font-bold text-blue-800">JUSTIFICATIVA:</span> <span className="font-normal">{d.justificativa}</span>
+                                        <span className="font-bold text-blue-800">JUSTIFICATIVA:</span> <span className="font-normal">
+    {d.justificativa}
+
+    {d.categoria === 'Combustível' &&
+     d.kmPercorrido &&
+     d.consumoKmLitro &&
+     d.precoCombustivel && (
+
+        <>
+            {' '}
+            <strong>
+                MEMÓRIA DE CÁLCULO:
+            </strong>
+            {' '}
+            Valor = (KM percorrido ÷ Consumo km/l)
+            × Preço do combustível.
+            {' '}
+            Aplicação:
+            {' '}
+            ({d.kmPercorrido} km ÷ {d.consumoKmLitro} km/l)
+            × R$ {d.precoCombustivel}/l
+            = {formatCurrency(d.valor)}.
+        </>
+
+    )}
+</span>
                                     </div>
 
                                     {d.anexos?.length > 0 && (
