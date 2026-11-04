@@ -1145,91 +1145,155 @@ calcularCombustivel()
                         </div>
 
                         {/* BLOCOS DE DESPESA MODERNO */}
-                        <div className="space-y-3">
-                            {despesas.map((d, idx) => (
-                                <div key={idx} className="expense-block break-inside-avoid w-full mb-2">
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                        <div className="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]">{idx + 1}</div>
-                                        <h2 className="text-sm font-bold text-gray-800 uppercase flex-1 leading-none">{d.categoria}</h2>
-                                        <div className="text-right leading-none">
-                                            <p className="text-[10px] font-bold text-slate-500 mb-0.5">{d.data}</p>
-                                            <p className="text-sm font-black text-blue-700">{formatCurrency(d.valor)}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="bg-blue-50 border border-blue-100 rounded-md p-1.5 mb-1.5 text-[11px] text-gray-700 leading-tight">
-                                        <span className="font-bold text-blue-800">JUSTIFICATIVA:</span> <span className="font-normal">
-    {d.justificativa}
+<div className="space-y-3">
 
-    {d.categoria === 'Combustível' &&
-     d.kmPercorrido &&
-     d.consumoKmLitro &&
-     d.precoCombustivel && (
+    {despesas.map((d, idx) => (
 
-        <>
-            {' '}
-            <strong>
-                MEMÓRIA DE CÁLCULO:
-            </strong>
-            {' '}
-            Valor = (KM percorrido ÷ Consumo km/l)
-            × Preço do combustível.
-            {' '}
-            Aplicação:
-            {' '}
-            ({d.kmPercorrido} km ÷ {d.consumoKmLitro} km/l)
-            × R$ {d.precoCombustivel}/l
-            = {formatCurrency(d.valor)}.
-        </>
+        <div
+            key={idx}
+            className="expense-block break-inside-avoid w-full mb-2"
+        >
 
-    )}
-</span>
-                                    </div>
+            <div className="flex items-center gap-2 mb-1.5">
 
-                                    {d.anexos?.length > 0 && (
+                <div className="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]">
+                    {idx + 1}
+                </div>
 
-    <div className="space-y-2 mt-2">
+                <h2 className="text-sm font-bold text-gray-800 uppercase flex-1 leading-none">
+                    {d.categoria}
+                </h2>
 
-        {d.anexos.map((img, idx) => (
+                <div className="text-right leading-none">
 
-            <div
-                key={idx}
-                className="flex justify-center"
-            >
+                    <p className="text-[10px] font-bold text-slate-500 mb-0.5">
+                        {d.data}
+                    </p>
 
-                <img
-                    src={img}
-                    alt={`Comprovante ${idx + 1}`}
-                    className="max-w-full max-h-[650px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50"
-                />
+                    <p className="text-sm font-black text-blue-700">
+                        {formatCurrency(d.valor)}
+                    </p>
+
+                </div>
 
             </div>
 
-        ))}
+            <div className="bg-blue-50 border border-blue-100 rounded-md p-1.5 mb-1.5 text-[11px] text-gray-700 leading-tight">
 
-    </div>
+                <span className="font-bold text-blue-800">
+                    JUSTIFICATIVA:
+                </span>
 
-)}
-                                </div>
-                            ))}
+                {' '}
+
+                <span className="font-normal">
+
+                    {d.justificativa}
+
+                    {d.categoria === 'Combustível' &&
+                    d.kmPercorrido &&
+                    d.consumoKmLitro &&
+                    d.precoCombustivel && (
+
+                        <>
+                            {' '}
+                            <strong>
+                                MEMÓRIA DE CÁLCULO:
+                            </strong>
+                            {' '}
+                            Valor = (KM percorrido ÷ Consumo km/l)
+                            × Preço do combustível.
+                            {' '}
+                            Aplicação:
+                            {' '}
+                            ({d.kmPercorrido} km / {d.consumoKmLitro} km/l)
+                            × R$ {d.precoCombustivel}/l
+                            = {formatCurrency(d.valor)}.
+                        </>
+
+                    )}
+
+                </span>
+
+            </div>
+
+            {d.anexos?.length > 0 && (
+
+                <div className="space-y-2 mt-2">
+
+                    {d.anexos.map((img, imgIdx) => (
+
+                        <div
+                            key={imgIdx}
+                            className="flex justify-center"
+                        >
+
+                            <img
+                                src={img}
+                                alt={`Comprovante ${imgIdx + 1}`}
+                                className="max-w-full max-h-[650px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50"
+                            />
+
                         </div>
 
-                        {/* ASSINATURA ULTRA COMPRIMIDA */}
-                        <div className="expense-block break-inside-avoid w-full mt-4 pt-3 border-t-2 border-slate-100 text-center font-normal">
-                            <p className="text-[10px] text-gray-500 mb-4 px-12 leading-tight">
-                                Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.
-                            </p>
-                            <p className="text-[11px] font-semibold text-gray-600 mb-6">Maceió - AL, _____ / _____ / __________</p>
-                            
-                            <div className="w-1/2 mx-auto border-t border-gray-400 pt-1">
-                                <p className="font-bold text-xs text-gray-800 uppercase">{formData.representante || 'REPRESENTANTE LEGAL'}</p>
-                                <p className="text-[9px] text-gray-500">Representante Legal</p>
-                            </div>
-                        </div>
-                    </div>
+                    ))}
+
                 </div>
-            );
-        }
+
+            )}
+
+            {idx === despesas.length - 1 && (
+
+    <div
+        className="
+            mt-4
+            pt-3
+            border-t-2
+            border-slate-100
+            text-center
+            font-normal
+        "
+        style={{
+            breakInside: 'avoid',
+            pageBreakInside: 'avoid'
+        }}
+    >
+
+                    <p className="text-[10px] text-gray-500 mb-4 px-12 leading-tight">
+                        Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.
+                    </p>
+
+                    <p className="text-[11px] font-semibold text-gray-600 mb-6">
+                        Maceió - AL, _____ / _____ / __________
+                    </p>
+
+                    <div className="w-1/2 mx-auto border-t border-gray-400 pt-1">
+
+                        <p className="font-bold text-xs text-gray-800 uppercase">
+                            {formData.representante || 'REPRESENTANTE LEGAL'}
+                        </p>
+
+                        <p className="text-[9px] text-gray-500">
+                            Representante Legal
+                        </p>
+
+                    </div>
+
+                </div>
+
+            )}
+
+        </div>
+
+    ))}
+
+</div>
+                      
+                                              
+                    </div> {/* fecha pdf-content */}
+                </div> {/* fecha container principal */}
+             );
+        } 
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<ControleDespesas />);
