@@ -669,7 +669,7 @@
                                         <div className="space-y-2 mt-2">
                                             {d.anexos.map((img, imgIdx) => (
                                                 <div key={imgIdx} className="flex justify-center">
-                                                    <img src={img} alt={`Comprovante ${imgIdx + 1}`} className="max-w-full max-h-[600px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50" />
+                                                    <img src={img} alt={`Comprovante ${imgIdx + 1}`} className="max-w-full max-h-[500px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50" />
                                                 </div>
                                             ))}
                                         </div>
@@ -680,35 +680,26 @@
                                             <p className="text-[10px] text-gray-500 mb-4 px-12 leading-tight">
                                                 Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.
                                             </p>
-                                            <table className="w-full mt-8">
-    <tbody>
-        <tr>
-
-            <td className="w-1/2 align-bottom">
-                <p className="text-[11px] font-semibold text-gray-600">
-                    Maceió - AL, _____ / _____ / __________
-                </p>
-            </td>
-
-            <td className="w-1/2 text-center align-bottom">
-
-                <div className="w-56 mx-auto border-t border-gray-400 pt-1">
-
-                    <p className="font-bold text-xs text-gray-800 uppercase">
-                        {formData.representante || 'REPRESENTANTE LEGAL'}
-                    </p>
-
-                    <p className="text-[9px] text-gray-500">
-                        Representante Legal
-                    </p>
-
-                </div>
-
-            </td>
-
-        </tr>
-    </tbody>
-</table>
+                                            
+                                            <table className="w-full mt-8 px-4">
+                                                <tbody>
+                                                    <tr>
+                                                        <td className="w-1/2 align-bottom pb-1 text-left">
+                                                            <span className="text-[11px] font-semibold text-gray-800">Maceió - AL, _____ / _____ / __________</span>
+                                                        </td>
+                                                        <td className="w-1/2 align-bottom text-center">
+                                                            <div className="border-b border-gray-800 w-56 mx-auto"></div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="w-1/2"></td>
+                                                        <td className="w-1/2 text-center pt-1">
+                                                            <p className="font-bold text-[10px] text-gray-800 uppercase">{formData.representante || 'REPRESENTANTE LEGAL'}</p>
+                                                            <p className="text-[9px] text-gray-500">Representante Legal</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     )}
                                 </div>
