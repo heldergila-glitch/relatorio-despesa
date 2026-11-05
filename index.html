@@ -645,7 +645,12 @@
                                         </div>
                                         <h2 className="text-sm font-bold text-gray-800 uppercase flex-1 leading-none">{d.categoria}</h2>
                                         <div className="text-right leading-none">
-                                            <p className="text-[10px] font-bold text-slate-500 mb-0.5">{d.data}</p>
+                                            <p className="text-[10px] font-bold text-slate-500 mb-0.5">
+    {d.data
+        ? new Date(d.data + 'T00:00:00')
+              .toLocaleDateString('pt-BR')
+        : ''}
+</p>
                                             <p className="text-sm font-black text-blue-700">{formatCurrency(d.valor)}</p>
                                         </div>
                                     </div>
