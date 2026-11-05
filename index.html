@@ -516,7 +516,8 @@ const formatCurrency = (val) => {
                 // Garante que a biblioteca só seja baixada se não existir
                 if (!window.html2pdf) {
                     const script = document.createElement('script');
-                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                    script.src =
+  "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
                     script.onload = processPdf;
                     document.body.appendChild(script);
                 } else {
@@ -1292,11 +1293,10 @@ calcularCombustivel()
                                               
                     </div> {/* fecha pdf-content */}
 
-</div> {/* fecha main-ui */}
-
 </div> {/* fecha min-h-screen */}
 
 );
+
 }
 
 const root = ReactDOM.createRoot(
