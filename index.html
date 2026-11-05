@@ -378,9 +378,12 @@
                     {/* TELA PRINCIPAL (APP) INSPIRADA NO DESIGN PREMIUM */}
                     <div id="main-ui" className="max-w-4xl mx-auto space-y-4 relative">
                         
-                        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-6 shadow-md">
-                            <h1 className="text-3xl font-bold">💰 Relatório de Despesas</h1>
-                            <p className="opacity-90 mt-1">Gestão financeira do benefício</p>
+                        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-6 shadow-md flex items-center gap-4">
+                            <img src="./icon-192.png" alt="Logo Neurodiversidade" className="w-16 h-16 object-contain bg-white rounded-2xl p-1 shadow-sm" />
+                            <div>
+                                <h1 className="text-3xl font-bold">Relatório de Despesas</h1>
+                                <p className="opacity-90 mt-1">Gestão financeira do benefício</p>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
@@ -592,9 +595,12 @@
                     {/* AREA INVISIVEL DO PDF COM DESIGN MODERNO */}
                     <div id="pdf-content" style={{ display: 'none', width: '100%', backgroundColor: 'white', color: 'black', fontFamily: 'Arial, sans-serif', padding: '10px' }}>
                         
-                        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-lg p-1.5 mb-2 text-center shadow-sm">
-                            <h1 className="text-lg font-bold uppercase tracking-wider leading-none mb-0.5">Relatório de Despesas</h1>
-                            <p className="text-[9px] uppercase opacity-90 tracking-widest leading-none">Comprovação de Comprometimento de Renda</p>
+                        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-lg p-2 mb-2 flex items-center justify-center gap-3 shadow-sm">
+                            <img src="./icon-192.png" alt="Logo" className="w-10 h-10 bg-white rounded-lg p-0.5 object-contain" />
+                            <div className="text-center">
+                                <h1 className="text-lg font-bold uppercase tracking-wider leading-none mb-0.5">Relatório de Despesas</h1>
+                                <p className="text-[9px] uppercase opacity-90 tracking-widest leading-none">Comprovação de Comprometimento de Renda</p>
+                            </div>
                         </div>
 
                         <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 mb-2">
