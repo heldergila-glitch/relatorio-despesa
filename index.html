@@ -29,222 +29,184 @@
             });
             const [despesas, setDespesas] = useState([]);
             const [novaDespesa, setNovaDespesa] = useState({
-    categoria: 'Terapia',
-    justificativaModelo: '',
-    data: '',
-    valor: '',
-
-    kmPercorrido: '',
-consumoKmLitro: '10',
-precoCombustivel: '',
-
-    justificativa: '',
-    anexos: []
-});
+                categoria: 'Terapia',
+                justificativaModelo: '',
+                data: '',
+                valor: '',
+                kmPercorrido: '',
+                consumoKmLitro: '10',
+                precoCombustivel: '',
+                justificativa: '',
+                anexos: []
+            });
             const [isGenerating, setIsGenerating] = useState(false);
             const [editingIndex, setEditingIndex] = useState(null);
             const [formError, setFormError] = useState('');
+            
             const justificativasPorCategoria = {
-
-"Terapia": [
-
-"Outro (descrever manualmente)",
-    
-"Consulta médica especializada.",
-"Sessão de fonoaudiologia.",
-"Sessão de terapia ocupacional.",
-"Sessão de psicologia.",
-"Sessão de fisioterapia.",
-"Sessão de psicopedagogia.",
-"Sessão de equoterapia.",
-"Acompanhamento multiprofissional.",
-"Avaliação neuropsicológica.",
-"Avaliação psicológica.",
-"Atendimento especializado para acompanhamento do desenvolvimento.",
-"Tratamento terapêutico contínuo.",
-"Consulta de retorno para acompanhamento clínico.",
-"Participação em programa de reabilitação.",
-"Atividade terapêutica recomendada por profissional de saúde."
-
-],
-
-"Escola / Cursos": [
-
-"Outro (descrever manualmente)",
-    
-"Pagamento de mensalidade escolar.",
-"Aquisição de material escolar.",
-"Compra de uniforme escolar.",
-"Aquisição de livros didáticos.",
-"Participação em atividade extracurricular.",
-"Curso complementar ao desenvolvimento educacional.",
-"Atividade pedagógica especializada.",
-"Curso de informática.",
-"Curso de idiomas.",
-"Projeto educacional complementar.",
-"Material pedagógico para atividades escolares.",
-"Pagamento de transporte escolar.",
-"Participação em oficina educacional.",
-"Capacitação complementar.",
-"Despesas relacionadas à educação do beneficiário."
-
-],
-
-"Combustível": [
-
-"Outro (descrever manualmente)",
-    
-"Deslocamento para sessão terapêutica em veículo próprio.",
-"Deslocamento para consulta médica em veículo próprio.",
-"Deslocamento para realização de exames.",
-"Deslocamento para atividade educacional.",
-"Deslocamento para acompanhamento especializado.",
-"Transporte para atendimento clínico.",
-"Deslocamento para fisioterapia.",
-"Deslocamento para atendimento multiprofissional.",
-"Viagem para tratamento médico.",
-"Deslocamento para atividade de inclusão social.",
-"Deslocamento para atividade recreativa supervisionada.",
-"Transporte do beneficiário para atendimento especializado.",
-"Deslocamento relacionado às necessidades do beneficiário.",
-"Transporte do beneficiário em veículo próprio.",
-"Transporte para atividade recomendada por profissional de saúde."
-
-],
-
-"Uber / App": [
-
-"Outro (descrever manualmente)",
-
-"Transporte para sessão terapêutica.",
-"Transporte para consulta médica.",
-"Transporte para realização de exames.",
-"Transporte para atividade educacional.",
-"Transporte para acompanhamento especializado.",
-"Transporte para atividade recreativa.",
-"Retorno para residência após sessão terapêutica.",
-"Retorno para residência após consulta médica.",
-"Retorno para residência após atividade educacional.",
-"Retorno para residência após realização de exames.",
-"Deslocamento do beneficiário por transporte por aplicativo.",
-"Transporte para tratamento especializado.",
-"Locomoção para atividade de inclusão social.",
-"Transporte para atendimento clínico.",
-"Deslocamento relacionado às necessidades do beneficiário."
-
-],
-
-"Farmácia": [
-
-"Outro (descrever manualmente)",
-    
-"Aquisição de medicamentos prescritos.",
-"Compra de medicamentos de uso contínuo.",
-"Aquisição de suplementos nutricionais.",
-"Compra de vitaminas.",
-"Aquisição de insumos para tratamento.",
-"Compra de produtos farmacêuticos.",
-"Compra de fraldas descartáveis.",
-"Aquisição de lenços umedecidos.",
-"Compra de material para curativos.",
-"Aquisição de pomadas terapêuticas.",
-"Compra de itens de higiene pessoal.",
-"Aquisição de produtos recomendados por profissional de saúde.",
-"Compra de fórmula nutricional.",
-"Aquisição de itens para cuidados especiais.",
-"Compra de materiais auxiliares para tratamento."
-
-],
-
-"Alimentação": [
-
-"Outro (descrever manualmente)",
-    
-"Aquisição de alimentos para consumo do beneficiário.",
-"Compra de dieta especial.",
-"Compra de alimentos recomendados por profissional de saúde.",
-"Aquisição de suplementos alimentares.",
-"Compra de fórmula nutricional.",
-"Manutenção nutricional do beneficiário.",
-"Aquisição de alimentos sem lactose.",
-"Aquisição de alimentos sem glúten.",
-"Compra de produtos dietéticos.",
-"Compra de frutas e verduras.",
-"Aquisição de gêneros alimentícios.",
-"Compra de alimentos durante tratamento médico.",
-"Alimentação relacionada às necessidades nutricionais específicas.",
-"Aquisição de produtos nutricionais.",
-"Compra de alimentação para atividade terapêutica prolongada."
-
-],
-
-"Vestuário": [
-
-"Outro (descrever manualmente)",
-    
-"Aquisição de roupas para uso diário.",
-"Compra de calçados.",
-"Aquisição de uniforme escolar.",
-"Compra de roupas infantis.",
-"Aquisição de agasalhos.",
-"Compra de tênis.",
-"Aquisição de sandálias.",
-"Reposição de vestuário do beneficiário.",
-"Aquisição de roupas adequadas à estação.",
-"Compra de vestuário para atividade escolar.",
-"Aquisição de acessórios de vestuário.",
-"Compra de mochila escolar.",
-"Aquisição de roupas para atividade esportiva.",
-"Compra de itens essenciais de vestuário.",
-"Despesa relacionada ao vestuário do beneficiário."
-
-],
-
-"Lazer": [
-
-"Outro (descrever manualmente)",
-    
-"Participação em atividade recreativa.",
-"Participação em atividade de inclusão social.",
-"Passeio educativo.",
-"Participação em evento cultural.",
-"Aquisição de brinquedo educativo.",
-"Aquisição de material recreativo.",
-"Atividade esportiva supervisionada.",
-"Participação em oficina recreativa.",
-"Participação em evento infantil.",
-"Visita a espaço cultural.",
-"Atividade de integração social.",
-"Aquisição de jogos educativos.",
-"Atividade de entretenimento do beneficiário.",
-"Participação em programa recreativo.",
-"Despesa voltada ao lazer e bem-estar do beneficiário."
-
-],
-
-"Outros": [
-
-"Outro (descrever manualmente)",
-    
-"Aquisição de item necessário ao bem-estar do beneficiário.",
-"Compra de material de apoio.",
-"Aquisição de equipamento auxiliar.",
-"Despesa relacionada à qualidade de vida do beneficiário.",
-"Compra de item de necessidade pessoal.",
-"Aquisição de recurso de acessibilidade.",
-"Compra de produto complementar ao tratamento.",
-"Aquisição de material complementar.",
-"Item utilizado para apoio às atividades do beneficiário.",
-"Despesa vinculada às necessidades específicas do beneficiário.",
-"Compra de utensílio de uso pessoal.",
-"Aquisição de equipamento de apoio doméstico.",
-"Despesa relacionada à inclusão social.",
-"Compra de item recomendado por profissional especializado.",
-"Despesa complementar para manutenção do bem-estar do beneficiário."
-
-]
-
-};
+                "Terapia": [
+                    "Outro (descrever manualmente)",
+                    "Consulta médica especializada.",
+                    "Sessão de fonoaudiologia.",
+                    "Sessão de terapia ocupacional.",
+                    "Sessão de psicologia.",
+                    "Sessão de fisioterapia.",
+                    "Sessão de psicopedagogia.",
+                    "Sessão de equoterapia.",
+                    "Acompanhamento multiprofissional.",
+                    "Avaliação neuropsicológica.",
+                    "Avaliação psicológica.",
+                    "Atendimento especializado para acompanhamento do desenvolvimento.",
+                    "Tratamento terapêutico contínuo.",
+                    "Consulta de retorno para acompanhamento clínico.",
+                    "Participação em programa de reabilitação.",
+                    "Atividade terapêutica recomendada por profissional de saúde."
+                ],
+                "Escola / Cursos": [
+                    "Outro (descrever manualmente)",
+                    "Pagamento de mensalidade escolar.",
+                    "Aquisição de material escolar.",
+                    "Compra de uniforme escolar.",
+                    "Aquisição de livros didáticos.",
+                    "Participação em atividade extracurricular.",
+                    "Curso complementar ao desenvolvimento educacional.",
+                    "Atividade pedagógica especializada.",
+                    "Curso de informática.",
+                    "Curso de idiomas.",
+                    "Projeto educacional complementar.",
+                    "Material pedagógico para atividades escolares.",
+                    "Pagamento de transporte escolar.",
+                    "Participação em oficina educacional.",
+                    "Capacitação complementar.",
+                    "Despesas relacionadas à educação do beneficiário."
+                ],
+                "Combustível": [
+                    "Outro (descrever manualmente)",
+                    "Deslocamento para sessão terapêutica em veículo próprio.",
+                    "Deslocamento para consulta médica em veículo próprio.",
+                    "Deslocamento para realização de exames.",
+                    "Deslocamento para atividade educacional.",
+                    "Deslocamento para acompanhamento especializado.",
+                    "Transporte para atendimento clínico.",
+                    "Deslocamento para fisioterapia.",
+                    "Deslocamento para atendimento multiprofissional.",
+                    "Viagem para tratamento médico.",
+                    "Deslocamento para atividade de inclusão social.",
+                    "Deslocamento para atividade recreativa supervisionada.",
+                    "Transporte do beneficiário para atendimento especializado.",
+                    "Deslocamento relacionado às necessidades do beneficiário.",
+                    "Transporte do beneficiário em veículo próprio.",
+                    "Transporte para atividade recomendada por profissional de saúde."
+                ],
+                "Uber / App": [
+                    "Outro (descrever manualmente)",
+                    "Transporte para sessão terapêutica.",
+                    "Transporte para consulta médica.",
+                    "Transporte para realização de exames.",
+                    "Transporte para atividade educacional.",
+                    "Transporte para acompanhamento especializado.",
+                    "Transporte para atividade recreativa.",
+                    "Retorno para residência após sessão terapêutica.",
+                    "Retorno para residência após consulta médica.",
+                    "Retorno para residência após atividade educacional.",
+                    "Retorno para residência após realização de exames.",
+                    "Deslocamento do beneficiário por transporte por aplicativo.",
+                    "Transporte para tratamento especializado.",
+                    "Locomoção para atividade de inclusão social.",
+                    "Transporte para atendimento clínico.",
+                    "Deslocamento relacionado às necessidades do beneficiário."
+                ],
+                "Farmácia": [
+                    "Outro (descrever manualmente)",
+                    "Aquisição de medicamentos prescritos.",
+                    "Compra de medicamentos de uso contínuo.",
+                    "Aquisição de suplementos nutricionais.",
+                    "Compra de vitaminas.",
+                    "Aquisição de insumos para tratamento.",
+                    "Compra de produtos farmacêuticos.",
+                    "Compra de fraldas descartáveis.",
+                    "Aquisição de lenços umedecidos.",
+                    "Compra de material para curativos.",
+                    "Aquisição de pomadas terapêuticas.",
+                    "Compra de itens de higiene pessoal.",
+                    "Aquisição de produtos recomendados por profissional de saúde.",
+                    "Compra de fórmula nutricional.",
+                    "Aquisição de itens para cuidados especiais.",
+                    "Compra de materiais auxiliares para tratamento."
+                ],
+                "Alimentação": [
+                    "Outro (descrever manualmente)",
+                    "Aquisição de alimentos para consumo do beneficiário.",
+                    "Compra de dieta especial.",
+                    "Compra de alimentos recomendados por profissional de saúde.",
+                    "Aquisição de suplementos alimentares.",
+                    "Compra de fórmula nutricional.",
+                    "Manutenção nutricional do beneficiário.",
+                    "Aquisição de alimentos sem lactose.",
+                    "Aquisição de alimentos sem glúten.",
+                    "Compra de produtos dietéticos.",
+                    "Compra de frutas e verduras.",
+                    "Aquisição de gêneros alimentícios.",
+                    "Compra de alimentos durante tratamento médico.",
+                    "Alimentação relacionada às necessidades nutricionais específicas.",
+                    "Aquisição de produtos nutricionais.",
+                    "Compra de alimentação para atividade terapêutica prolongada."
+                ],
+                "Vestuário": [
+                    "Outro (descrever manualmente)",
+                    "Aquisição de roupas para uso diário.",
+                    "Compra de calçados.",
+                    "Aquisição de uniforme escolar.",
+                    "Compra de roupas infantis.",
+                    "Aquisição de agasalhos.",
+                    "Compra de tênis.",
+                    "Aquisição de sandálias.",
+                    "Reposição de vestuário do beneficiário.",
+                    "Aquisição de roupas adequadas à estação.",
+                    "Compra de vestuário para atividade escolar.",
+                    "Aquisição de acessórios de vestuário.",
+                    "Compra de mochila escolar.",
+                    "Aquisição de roupas para atividade esportiva.",
+                    "Compra de itens essenciais de vestuário.",
+                    "Despesa relacionada ao vestuário do beneficiário."
+                ],
+                "Lazer": [
+                    "Outro (descrever manualmente)",
+                    "Participação em atividade recreativa.",
+                    "Participação em atividade de inclusão social.",
+                    "Passeio educativo.",
+                    "Participação em evento cultural.",
+                    "Aquisição de brinquedo educativo.",
+                    "Aquisição de material recreativo.",
+                    "Atividade esportiva supervisionada.",
+                    "Participação em oficina recreativa.",
+                    "Participação em evento infantil.",
+                    "Visita a espaço cultural.",
+                    "Atividade de integração social.",
+                    "Aquisição de jogos educativos.",
+                    "Atividade de entretenimento do beneficiário.",
+                    "Participação em programa recreativo.",
+                    "Despesa voltada ao lazer e bem-estar do beneficiário."
+                ],
+                "Outros": [
+                    "Outro (descrever manualmente)",
+                    "Aquisição de item necessário ao bem-estar do beneficiário.",
+                    "Compra de material de apoio.",
+                    "Aquisição de equipamento auxiliar.",
+                    "Despesa relacionada à qualidade de vida do beneficiário.",
+                    "Compra de item de necessidade pessoal.",
+                    "Aquisição de recurso de acessibilidade.",
+                    "Compra de produto complementar ao tratamento.",
+                    "Aquisição de material complementar.",
+                    "Item utilizado para apoio às atividades do beneficiário.",
+                    "Despesa vinculada às necessidades específicas do beneficiário.",
+                    "Compra de utensílio de uso pessoal.",
+                    "Aquisição de equipamento de apoio doméstico.",
+                    "Despesa relacionada à inclusão social.",
+                    "Compra de item recomendado por profissional especializado.",
+                    "Despesa complementar para manutenção do bem-estar do beneficiário."
+                ]
+            };
 
             // Carrega os dados salvos ao abrir o app
             useEffect(() => {
@@ -261,6 +223,24 @@ precoCombustivel: '',
                 localStorage.setItem('bpc_formData_v6', JSON.stringify({ formData, despesas }));
             }, [formData, despesas]);
 
+            const calcularCombustivel = () => {
+                const km = parseFloat(novaDespesa.kmPercorrido) || 0;
+                const consumo = parseFloat(novaDespesa.consumoKmLitro) || 0;
+                const preco = parseFloat(novaDespesa.precoCombustivel) || 0;
+                if (km <= 0 || consumo <= 0 || preco <= 0) return 0;
+                return (km / consumo) * preco;
+            };
+
+            useEffect(() => {
+                if (novaDespesa.categoria === 'Combustível') {
+                    const valor = calcularCombustivel();
+                    setNovaDespesa(prev => ({
+                        ...prev,
+                        valor: valor > 0 ? valor.toFixed(2) : ''
+                    }));
+                }
+            }, [novaDespesa.kmPercorrido, novaDespesa.consumoKmLitro, novaDespesa.precoCombustivel]);
+
             const handleAddDespesa = () => {
                 if (!novaDespesa.data || !novaDespesa.valor || !novaDespesa.justificativa) {
                     setFormError('Por favor, preencha a Data, o Valor e a Justificativa.');
@@ -269,239 +249,108 @@ precoCombustivel: '',
                 setFormError('');
 
                 if (editingIndex !== null) {
-                    // Atualiza a despesa existente
                     const novasDespesas = [...despesas];
                     novasDespesas[editingIndex] = novaDespesa;
                     setDespesas(novasDespesas);
                     setEditingIndex(null);
                 } else {
-                    // Adiciona nova despesa
                     setDespesas([...despesas, novaDespesa]);
                 }
                 
                 // Reseta o formulário
-               setNovaDespesa({
-    categoria: 'Terapia',
-    justificativaModelo: '',
-    data: '',
-    valor: '',
-
-    kmPercorrido: '',
-consumoKmLitro: '10',
-precoCombustivel: '',
-
-    justificativa: '',
-    anexos: []
-});
+                setNovaDespesa({
+                    categoria: 'Terapia',
+                    justificativaModelo: '',
+                    data: '',
+                    valor: '',
+                    kmPercorrido: '',
+                    consumoKmLitro: '10',
+                    precoCombustivel: '',
+                    justificativa: '',
+                    anexos: []
+                });
             };
 
             const handleEdit = (index) => {
                 setNovaDespesa({
-
-    ...despesas[index],
-
-    justificativaModelo:
-        despesas[index].justificativaModelo ||
-        despesas[index].justificativa
-
-});
+                    ...despesas[index],
+                    justificativaModelo: despesas[index].justificativaModelo || despesas[index].justificativa
+                });
                 setEditingIndex(index);
                 setFormError('');
-                window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe a tela para o formulário
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
             const handleImageUpload = (e) => {
-
-    const arquivos = Array.from(e.target.files);
-
-    arquivos.forEach(file => {
-
-        const reader = new FileReader();
-
-        reader.onload = event => {
-
-            const img = new Image();
-
-            img.onload = () => {
-
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-
-                const larguraMaxima = 1600;
-
-                let largura = img.width;
-                let altura = img.height;
-
-                if (largura > larguraMaxima) {
-
-                    altura *= larguraMaxima / largura;
-                    largura = larguraMaxima;
-
-                }
-
-                canvas.width = largura;
-                canvas.height = altura;
-
-                ctx.drawImage(
-                    img,
-                    0,
-                    0,
-                    largura,
-                    altura
-                );
-
-                const imagemComprimida =
-                    canvas.toDataURL(
-                        'image/jpeg',
-                        0.75
-                    );
-
-                setNovaDespesa(prev => ({
-
-                    ...prev,
-
-                    anexos: [
-                        ...(prev.anexos || []),
-                        imagemComprimida
-                    ]
-
-                }));
-
+                const arquivos = Array.from(e.target.files);
+                arquivos.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const larguraMaxima = 1600;
+                            let largura = img.width;
+                            let altura = img.height;
+                            if (largura > larguraMaxima) {
+                                altura *= larguraMaxima / largura;
+                                largura = larguraMaxima;
+                            }
+                            canvas.width = largura;
+                            canvas.height = altura;
+                            ctx.drawImage(img, 0, 0, largura, altura);
+                            const imagemComprimida = canvas.toDataURL('image/jpeg', 0.75);
+                            
+                            setNovaDespesa(prev => ({
+                                ...prev,
+                                anexos: [...(prev.anexos || []), imagemComprimida]
+                            }));
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
             };
-
-            img.src = event.target.result;
-
-        };
-
-        reader.readAsDataURL(file);
-
-    });
-
-};
 
             const removerDespesa = (index) => {
                 setDespesas(despesas.filter((_, i) => i !== index));
                 if (editingIndex === index) {
                     setEditingIndex(null);
-                   setNovaDespesa({
-    categoria: 'Terapia',
-    justificativaModelo: '',
-    data: '',
-    valor: '',
-
-    kmPercorrido: '',
-    consumoKmLitro: '10',
-    precoCombustivel: '',
-
-    justificativa: '',
-    anexos: []
-});
+                    setNovaDespesa({
+                        categoria: 'Terapia', justificativaModelo: '', data: '', valor: '',
+                        kmPercorrido: '', consumoKmLitro: '10', precoCombustivel: '', justificativa: '', anexos: []
+                    });
                 }
             };
 
-            const calcularCombustivel = () => {
-
-    const km =
-        parseFloat(
-            novaDespesa.kmPercorrido
-        ) || 0;
-
-    const consumo =
-        parseFloat(
-            novaDespesa.consumoKmLitro
-        ) || 0;
-
-    const preco =
-        parseFloat(
-            novaDespesa.precoCombustivel
-        ) || 0;
-
-    if (
-        km <= 0 ||
-        consumo <= 0 ||
-        preco <= 0
-    ) {
-        return 0;
-    }
-
-    return (
-        km / consumo
-    ) * preco;
-
-};
-
-// Função segura para converter número em Moeda (R$)
-const formatCurrency = (val) => {
-
-    const num = parseFloat(val);
-
-    return isNaN(num)
-        ? 'R$ 0,00'
-        : num.toLocaleString(
-            'pt-BR',
-            {
-                style: 'currency',
-                currency: 'BRL'
-            }
-        );
-
-};
+            const formatCurrency = (val) => {
+                const num = parseFloat(val);
+                return isNaN(num) ? 'R$ 0,00' : num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            };
             
             const total = despesas.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-            useEffect(() => {
-
-    if (
-        novaDespesa.categoria ===
-        'Combustível'
-    ) {
-
-        const valor =
-            calcularCombustivel();
-
-        setNovaDespesa(prev => ({
-
-            ...prev,
-
-            valor:
-                valor > 0
-                    ? valor.toFixed(2)
-                    : ''
-
-        }));
-
-    }
-
-}, [
-    novaDespesa.kmPercorrido,
-    novaDespesa.consumoKmLitro,
-    novaDespesa.precoCombustivel
-]);
 
             const generatePDF = () => {
                 setIsGenerating(true);
-                
                 const processPdf = () => {
                     const mainUi = document.getElementById('main-ui');
                     const pdfContent = document.getElementById('pdf-content');
                     
-                    // 1. Oculta a interface principal e mostra o PDF no topo absoluto
                     mainUi.style.display = 'none';
                     pdfContent.style.display = 'block';
-                    
-                    // 2. Força a rolagem para o topo 0
                     window.scrollTo(0, 0);
                     
                     const opt = {
-                        margin:       [5, 5, 10, 5], // 5 milímetros no topo e laterais. 10mm no rodapé.
+                        margin: [5, 5, 10, 5],
                         filename: `Relatorio_Despesas_${formData.beneficiario || 'Requerente'}_${formData.mes || 'Mes'}_${formData.ano}.pdf`,
-                        image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                        pagebreak:    { mode: ['css', 'legacy'], avoid: '.expense-block' }
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                        pagebreak: { mode: ['css', 'legacy'], avoid: '.expense-block' }
                     };
                     
                     window.html2pdf().set(opt).from(pdfContent).save().then(() => {
-                        // 3. Restaura a interface após gerar o documento
                         mainUi.style.display = 'block';
                         pdfContent.style.display = 'none';
                         setIsGenerating(false);
@@ -513,11 +362,9 @@ const formatCurrency = (val) => {
                     });
                 };
 
-                // Garante que a biblioteca só seja baixada se não existir
                 if (!window.html2pdf) {
                     const script = document.createElement('script');
-                    script.src =
-  "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
                     script.onload = processPdf;
                     document.body.appendChild(script);
                 } else {
@@ -531,13 +378,11 @@ const formatCurrency = (val) => {
                     {/* TELA PRINCIPAL (APP) INSPIRADA NO DESIGN PREMIUM */}
                     <div id="main-ui" className="max-w-4xl mx-auto space-y-4 relative">
                         
-                        {/* CABEÇALHO DEGRADÊ */}
                         <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-6 shadow-md">
                             <h1 className="text-3xl font-bold">💰 Relatório de Despesas</h1>
                             <p className="opacity-90 mt-1">Gestão financeira do benefício</p>
                         </div>
 
-                        {/* CARTÕES DE RESUMO */}
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-center items-center">
                                 <div className="text-gray-500 font-semibold text-sm">Total Acumulado</div>
@@ -549,120 +394,57 @@ const formatCurrency = (val) => {
                             </div>
                         </div>
                         
-                        {/* FORMULÁRIO DE DADOS */}
                         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-3">
                             <h2 className="text-lg font-bold text-gray-700 px-2">📋 Dados do Requerente</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <input className="border p-3 rounded-2xl w-full bg-slate-50 focus:ring-2 focus:ring-blue-400 outline-none transition-all" placeholder="Beneficiário (Criança)" value={formData.beneficiario} onChange={e => setFormData({...formData, beneficiario: e.target.value})} />
                                 <input className="border p-3 rounded-2xl w-full bg-slate-50 focus:ring-2 focus:ring-blue-400 outline-none transition-all" placeholder="CPF do Beneficiário" value={formData.cpfBeneficiario} onChange={e => setFormData({...formData, cpfBeneficiario: e.target.value})} />
                                 <div className="flex gap-2">
-
-    <select
-        className="border p-3 rounded-2xl flex-1"
-        value={formData.mes}
-        onChange={e =>
-            setFormData({
-                ...formData,
-                mes: e.target.value
-            })
-        }
-    >
-
-        <option value="">Mês</option>
-
-        <option value="Janeiro">Janeiro</option>
-        <option value="Fevereiro">Fevereiro</option>
-        <option value="Março">Março</option>
-        <option value="Abril">Abril</option>
-        <option value="Maio">Maio</option>
-        <option value="Junho">Junho</option>
-        <option value="Julho">Julho</option>
-        <option value="Agosto">Agosto</option>
-        <option value="Setembro">Setembro</option>
-        <option value="Outubro">Outubro</option>
-        <option value="Novembro">Novembro</option>
-        <option value="Dezembro">Dezembro</option>
-
-    </select>
-
-    <select
-        className="border p-3 rounded-2xl w-32"
-        value={formData.ano}
-        onChange={e =>
-            setFormData({
-                ...formData,
-                ano: e.target.value
-            })
-        }
-    >
-        {Array.from(
-            { length: 15 },
-            (_, i) => 2020 + i
-        ).map(ano => (
-            <option key={ano} value={ano}>
-                {ano}
-            </option>
-        ))}
-    </select>
-
-</div>
+                                    <select className="border p-3 rounded-2xl flex-1" value={formData.mes} onChange={e => setFormData({ ...formData, mes: e.target.value })}>
+                                        <option value="">Mês</option>
+                                        <option value="Janeiro">Janeiro</option>
+                                        <option value="Fevereiro">Fevereiro</option>
+                                        <option value="Março">Março</option>
+                                        <option value="Abril">Abril</option>
+                                        <option value="Maio">Maio</option>
+                                        <option value="Junho">Junho</option>
+                                        <option value="Julho">Julho</option>
+                                        <option value="Agosto">Agosto</option>
+                                        <option value="Setembro">Setembro</option>
+                                        <option value="Outubro">Outubro</option>
+                                        <option value="Novembro">Novembro</option>
+                                        <option value="Dezembro">Dezembro</option>
+                                    </select>
+                                    <select className="border p-3 rounded-2xl w-32" value={formData.ano} onChange={e => setFormData({ ...formData, ano: e.target.value })}>
+                                        {Array.from({ length: 15 }, (_, i) => 2020 + i).map(ano => (
+                                            <option key={ano} value={ano}>{ano}</option>
+                                        ))}
+                                    </select>
+                                </div>
                                 <input className="border p-3 rounded-2xl w-full focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="Representante Legal" value={formData.representante} onChange={e => setFormData({...formData, representante: e.target.value})} />
                                 <input className="border p-3 rounded-2xl w-full focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="CPF do Representante" value={formData.cpfRepresentante} onChange={e => setFormData({...formData, cpfRepresentante: e.target.value})} />
                                 <input className="border p-3 rounded-2xl w-full md:col-span-2 focus:ring-2 focus:ring-indigo-400 outline-none transition-all" placeholder="Endereço Completo" value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})} />
                             </div>
                         </div>
 
-                        {/* FORMULÁRIO DE DESPESAS */}
                         <div className={`bg-white p-6 rounded-3xl shadow-sm border ${editingIndex !== null ? 'border-amber-400 ring-2 ring-amber-100' : 'border-gray-100'} space-y-3 transition-all duration-300`}>
                             <h2 className="text-lg font-bold text-gray-700 px-2 flex justify-between items-center">
                                 <span>{editingIndex !== null ? '✏️ Editando Despesa' : '➕ Nova Despesa'}</span>
                                 {editingIndex !== null && (
-                                    <button onClick={() => {setEditingIndex(null); 
-                                                            setNovaDespesa({
-    categoria: 'Terapia',
-    justificativaModelo: '',
-    data: '',
-    valor: '',                                                                
-    
-    kmPercorrido: '',
-    consumoKmLitro: '10',
-    precoCombustivel: '',
-                                                                
-    justificativa: '',
-    anexos: []
-})}} className="text-sm font-normal text-gray-500 hover:text-red-500 bg-gray-100 px-3 py-1 rounded-full transition-colors">
+                                    <button onClick={() => {
+                                        setEditingIndex(null); 
+                                        setNovaDespesa({
+                                            categoria: 'Terapia', justificativaModelo: '', data: '', valor: '', 
+                                            kmPercorrido: '', consumoKmLitro: '10', precoCombustivel: '', justificativa: '', anexos: []
+                                        });
+                                    }} className="text-sm font-normal text-gray-500 hover:text-red-500 bg-gray-100 px-3 py-1 rounded-full transition-colors">
                                         Cancelar Edição
                                     </button>
                                 )}
                             </h2>
                             
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <select
-    className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none bg-white"
-    value={novaDespesa.categoria}
-
-    onChange={e =>
-
-    setNovaDespesa({
-
-        ...novaDespesa,
-
-        categoria: e.target.value,
-
-        justificativaModelo: '',
-
-        justificativa: '',
-
-        kmPercorrido: '',
-        consumoKmLitro: '10',
-        precoCombustivel: '',
-
-        valor: ''
-
-    })
-
-}
->
+                                <select className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none bg-white" value={novaDespesa.categoria} onChange={e => setNovaDespesa({ ...novaDespesa, categoria: e.target.value, justificativaModelo: '', justificativa: '', kmPercorrido: '', consumoKmLitro: '10', precoCombustivel: '', valor: '' })}>
                                     <option value="Terapia">Terapia / Consulta</option>
                                     <option value="Escola / Cursos">Escola / Cursos</option>
                                     <option value="Combustível">Combustível</option>
@@ -673,367 +455,83 @@ const formatCurrency = (val) => {
                                     <option value="Lazer">Lazer</option>
                                     <option value="Outros">Outros</option>
                                 </select>
-                                {
-novaDespesa.categoria ===
-'Combustível' && (
-
-<div
-className="
-md:col-span-3
-bg-blue-50
-border
-border-blue-200
-rounded-2xl
-p-4
-"
->
-
-<h3
-className="
-font-bold
-text-blue-700
-mb-3
-"
->
-🚗 Cálculo do Combustível
-</h3>
-<p className="text-xs text-gray-500 mt-1">
-Valor = (KM percorrido ÷ Consumo km/l) × Preço do combustível
-</p>
-<div
-className="
-grid
-grid-cols-1
-md:grid-cols-3
-gap-3
-"
->
-
-<input
-type="number"
-placeholder="KM percorrido"
-className="border p-3 rounded-xl"
-value={
-novaDespesa.kmPercorrido
-}
-onChange={e =>
-setNovaDespesa({
-
-...novaDespesa,
-
-kmPercorrido:
-e.target.value
-
-})
-}
-/>
-
-<input
-type="number"
-placeholder="Consumo (km/l)"
-className="border p-3 rounded-xl"
-value={
-novaDespesa.consumoKmLitro
-}
-onChange={e =>
-setNovaDespesa({
-
-...novaDespesa,
-
-consumoKmLitro:
-e.target.value
-
-})
-}
-/>
-
-<input
-type="number"
-step="0.01"
-placeholder="Preço combustível"
-className="border p-3 rounded-xl"
-value={
-novaDespesa.precoCombustivel
-}
-onChange={e =>
-setNovaDespesa({
-
-...novaDespesa,
-
-precoCombustivel:
-e.target.value
-
-})
-}
-/>
-
-</div>
-
-<div
-className="
-mt-4
-bg-white
-border
-rounded-xl
-p-3
-"
->
-
-<p>
-
-Litros Consumidos:
-
-<strong>
-
-{' '}
-
-{(
-(
-parseFloat(
-novaDespesa.kmPercorrido
-) || 0
-)
-/
-(
-parseFloat(
-novaDespesa.consumoKmLitro
-) || 1
-)
-).toFixed(2)}
-
-L
-
-</strong>
-
-</p>
-
-<p
-className="
-text-lg
-font-bold
-text-green-700
-"
->
-
-Valor Calculado:
-
-{' '}
-
-{formatCurrency(
-calcularCombustivel()
-)}
-
-</p>
-
-</div>
-
-</div>
-
-)
-}
+                                
+                                {novaDespesa.categoria === 'Combustível' && (
+                                    <div className="md:col-span-3 bg-blue-50 border border-blue-200 rounded-2xl p-4">
+                                        <h3 className="font-bold text-blue-700 mb-3">🚗 Cálculo do Combustível</h3>
+                                        <p className="text-xs text-gray-500 mt-1">Valor = (KM percorrido ÷ Consumo km/l) × Preço do combustível</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                            <input type="number" placeholder="KM percorrido" className="border p-3 rounded-xl" value={novaDespesa.kmPercorrido} onChange={e => setNovaDespesa({ ...novaDespesa, kmPercorrido: e.target.value })} />
+                                            <input type="number" placeholder="Consumo (km/l)" className="border p-3 rounded-xl" value={novaDespesa.consumoKmLitro} onChange={e => setNovaDespesa({ ...novaDespesa, consumoKmLitro: e.target.value })} />
+                                            <input type="number" step="0.01" placeholder="Preço combustível" className="border p-3 rounded-xl" value={novaDespesa.precoCombustivel} onChange={e => setNovaDespesa({ ...novaDespesa, precoCombustivel: e.target.value })} />
+                                        </div>
+                                        <div className="mt-4 bg-white border rounded-xl p-3">
+                                            <p>Litros Consumidos: <strong> {((parseFloat(novaDespesa.kmPercorrido) || 0) / (parseFloat(novaDespesa.consumoKmLitro) || 1)).toFixed(2)} L</strong></p>
+                                            <p className="text-lg font-bold text-green-700">Valor Calculado: {formatCurrency(calcularCombustivel())}</p>
+                                        </div>
+                                    </div>
+                                )}
+                                
                                 <input type="date" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" value={novaDespesa.data} onChange={e => setNovaDespesa({...novaDespesa, data: e.target.value})} />
                                 <input type="number" className="border p-3 rounded-2xl focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Valor (R$)" value={novaDespesa.valor} onChange={e => setNovaDespesa({...novaDespesa, valor: e.target.value})} />
-                                <select
-    className="
-        border
-        p-3
-        rounded-2xl
-        md:col-span-3
-        focus:ring-2
-        focus:ring-blue-400
-        outline-none
-    "
-
-    value={novaDespesa.justificativaModelo || ''}
-
-    onChange={(e)=>{
-
-    const valor = e.target.value;
-
-    if(valor === "Outro (descrever manualmente)"){
-
-        setNovaDespesa({
-
-            ...novaDespesa,
-
-            justificativaModelo: valor,
-
-            justificativa: ''
-
-        });
-
-    } else {
-
-        setNovaDespesa({
-
-            ...novaDespesa,
-
-            justificativaModelo: valor,
-
-            justificativa: valor
-
-        });
-
-    }
-
-}}
-
->
-
-    <option value="">
-        Selecione uma justificativa sugerida
-    </option>
-
-    {(justificativasPorCategoria[
-        novaDespesa.categoria
-    ] || []).map((item,index)=>(
-
-        <option
-            key={index}
-            value={item}
-        >
-            {item}
-        </option>
-
-    ))}
-
-</select>
+                                
+                                <select className="border p-3 rounded-2xl md:col-span-3 focus:ring-2 focus:ring-blue-400 outline-none" value={novaDespesa.justificativaModelo || ''} onChange={(e) => {
+                                    const valor = e.target.value;
+                                    if(valor === "Outro (descrever manualmente)") {
+                                        setNovaDespesa({ ...novaDespesa, justificativaModelo: valor, justificativa: '' });
+                                    } else {
+                                        setNovaDespesa({ ...novaDespesa, justificativaModelo: valor, justificativa: valor });
+                                    }
+                                }}>
+                                    <option value="">Selecione uma justificativa sugerida</option>
+                                    {(justificativasPorCategoria[novaDespesa.categoria] || []).map((item,index)=>(
+                                        <option key={index} value={item}>{item}</option>
+                                    ))}
+                                </select>
+                                
                                 <textarea rows="2" className="border p-3 rounded-2xl md:col-span-3 focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Justificativa (Ex: Sessão de fonoaudiologia...)" value={novaDespesa.justificativa} onChange={e => setNovaDespesa({...novaDespesa, justificativa: e.target.value})}></textarea>
+                                
                                 <div className="md:col-span-3">
-    <a
-        href="pdf-converter.html"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="
-            block
-            w-full
-            text-center
-            bg-indigo-600
-            hover:bg-indigo-700
-            text-white
-            font-bold
-            p-3
-            rounded-2xl
-            transition-all
-            shadow-sm
-        "
-    >
-        📄➡️🖼️ Converter PDF para Anexo de Imagem
-    </a>
-
-    <p className="text-xs text-gray-500 mt-2 text-center">
-        Use esta opção caso o comprovante esteja em PDF.
-    </p>
-</div>
-                                <div className="md:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 border-dashed flex items-center justify-between">
+                                    <a href="pdf-converter.html" target="_blank" rel="noopener noreferrer" className="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-3 rounded-2xl transition-all shadow-sm">
+                                        📄➡️🖼️ Converter PDF para Anexo de Imagem
+                                    </a>
+                                    <p className="text-xs text-gray-500 mt-2 text-center">Use esta opção caso o comprovante esteja em PDF.</p>
+                                </div>
+                                
+                                <div className="md:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 border-dashed flex flex-col items-center justify-between">
                                     <div className="flex-1 w-full">
                                         <label className="block text-sm font-bold text-gray-600 mb-2">📸 Anexar Comprovante (Foto ou Print)</label>
                                         <div className="flex gap-2">
-
-    <label className="flex-1">
-
-        <input
-    type="file"
-    accept="image/*"
-    capture="environment"
-    multiple={false}
-            className="hidden"
-            onChange={handleImageUpload}
-        />
-
-        <div className="bg-green-600 text-white text-center p-3 rounded-xl cursor-pointer font-bold">
-            📷 Tirar Foto
-        </div>
-
-    </label>
-
-    <label className="flex-1">
-
-        <input
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            onChange={handleImageUpload}
-        />
-
-        <div className="bg-blue-600 text-white text-center p-3 rounded-xl cursor-pointer font-bold">
-            📁 Escolher Arquivo
-        </div>
-
-    </label>
-
-</div> 
+                                            <label className="flex-1">
+                                                <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageUpload} />
+                                                <div className="bg-green-600 text-white text-center p-3 rounded-xl cursor-pointer font-bold">📷 Tirar Foto</div>
+                                            </label>
+                                            <label className="flex-1">
+                                                <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
+                                                <div className="bg-blue-600 text-white text-center p-3 rounded-xl cursor-pointer font-bold">📁 Escolher Arquivo</div>
+                                            </label>
+                                        </div> 
                                     </div>
-                                    {novaDespesa.anexos?.length > 0 && (
-
-    <div>
-
-        <p className="text-sm font-semibold text-gray-600 mb-2">
-            📎 {novaDespesa.anexos.length} anexo(s)
-        </p>
-
-        <div className="flex flex-wrap gap-2 ml-2 mt-3">
-
-            {novaDespesa.anexos.map((img, idx) => (
-
-                <div
-                    key={idx}
-                    className="relative"
-                >
-
-                    <img
-                        src={img}
-                        alt={`Anexo ${idx + 1}`}
-                        className="h-14 w-14 object-cover rounded-lg border"
-                    />
-
-                    <button
-                        type="button"
-                        onClick={() => {
-
-                            if (!confirm("Remover este anexo?")) return;
-
-                            setNovaDespesa(prev => ({
-
-                                ...prev,
-
-                                anexos: prev.anexos.filter(
-                                    (_, i) => i !== idx
-                                )
-
-                            }));
-
-                        }}
-                        className="
-                            absolute
-                            -top-2
-                            -right-2
-                            w-6
-                            h-6
-                            rounded-full
-                            bg-red-600
-                            text-white
-                            text-xs
-                            font-bold
-                            flex
-                            items-center
-                            justify-center
-                            shadow
-                        "
-                    >
-                        ✕
-                    </button>
-
-                </div>
-
-            ))}
-
-        </div>
-
-    </div>
-
-)}
+                                    
+                                    {novaDespesa.anexos && novaDespesa.anexos.length > 0 && (
+                                        <div className="w-full mt-3">
+                                            <p className="text-sm font-semibold text-gray-600 mb-2">📎 {novaDespesa.anexos.length} anexo(s)</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {novaDespesa.anexos.map((img, idx) => (
+                                                    <div key={idx} className="relative">
+                                                        <img src={img} alt={`Anexo ${idx + 1}`} className="h-14 w-14 object-cover rounded-lg border" />
+                                                        <button type="button" onClick={() => {
+                                                            if (!confirm("Remover este anexo?")) return;
+                                                            setNovaDespesa(prev => ({
+                                                                ...prev,
+                                                                anexos: prev.anexos.filter((_, i) => i !== idx)
+                                                            }));
+                                                        }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shadow">✕</button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 
                                 {formError && <div className="md:col-span-3 text-red-500 font-semibold px-2 text-sm text-center animate-pulse">{formError}</div>}
@@ -1044,7 +542,6 @@ calcularCombustivel()
                             </div>
                         </div>
 
-                        {/* LISTA DE DESPESAS */}
                         {despesas.length > 0 && (
                             <div className="space-y-3 mt-4">
                                 <h2 className="text-lg font-bold text-gray-700 px-2 flex justify-between items-center">
@@ -1058,24 +555,15 @@ calcularCombustivel()
                                                 <span className="bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded-lg font-semibold">{d.data}</span>
                                             </div>
                                             <div className="text-sm text-gray-600 mb-3">{d.justificativa}</div>
-                                            {d.anexos?.length > 0 && (
-
-    <div className="flex flex-wrap gap-2 mb-3">
-
-        {d.anexos.map((img, idx) => (
-
-            <img
-                key={idx}
-                src={img}
-                alt={`Anexo ${idx + 1}`}
-                className="h-12 w-12 object-cover rounded border"
-            />
-
-        ))}
-
-    </div>
-
-)}
+                                            
+                                            {d.anexos && d.anexos.length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mb-3">
+                                                    {d.anexos.map((img, idx) => (
+                                                        <img key={idx} src={img} alt={`Anexo ${idx + 1}`} className="h-12 w-12 object-cover rounded border" />
+                                                    ))}
+                                                </div>
+                                            )}
+                                            
                                             <div className="text-xl font-black text-blue-700">{formatCurrency(d.valor)}</div>
                                         </div>
                                         <div className="flex items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
@@ -1104,13 +592,11 @@ calcularCombustivel()
                     {/* AREA INVISIVEL DO PDF COM DESIGN MODERNO */}
                     <div id="pdf-content" style={{ display: 'none', width: '100%', backgroundColor: 'white', color: 'black', fontFamily: 'Arial, sans-serif', padding: '10px' }}>
                         
-                        {/* CABEÇALHO DEGRADÊ ULTRA COMPRIMIDO */}
                         <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-lg p-1.5 mb-2 text-center shadow-sm">
                             <h1 className="text-lg font-bold uppercase tracking-wider leading-none mb-0.5">Relatório de Despesas</h1>
                             <p className="text-[9px] uppercase opacity-90 tracking-widest leading-none">Comprovação de Comprometimento de Renda</p>
                         </div>
 
-                        {/* DADOS DO REQUERENTE EM CARTÃO ULTRA COMPRIMIDO */}
                         <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 mb-2">
                             <div className="grid grid-cols-2 gap-1 text-sm">
                                 <div>
@@ -1133,10 +619,8 @@ calcularCombustivel()
                                 <div>
                                     <p className="text-[9px] text-slate-500 font-bold uppercase leading-none mb-0.5">Mês/Ano Ref.</p>
                                     <p className="font-bold text-gray-800 text-xs leading-none">
-    {formData.mes
-        ? `${formData.mes} / ${formData.ano}`
-        : 'Não informado'}
-</p>
+                                        {formData.mes ? `${formData.mes} / ${formData.ano}` : 'Não informado'}
+                                    </p>
                                 </div>
                                 <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded border border-blue-200 flex flex-col justify-center">
                                     <p className="text-[9px] font-bold uppercase leading-none mb-0.5">Total Comprovado</p>
@@ -1145,166 +629,70 @@ calcularCombustivel()
                             </div>
                         </div>
 
-                        {/* BLOCOS DE DESPESA MODERNO */}
-<div className="space-y-3">
+                        <div className="space-y-3">
+                            {despesas.map((d, idx) => (
+                                <div key={idx} className="expense-block break-inside-avoid w-full mb-2">
+                                    
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <div className="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]">
+                                            {idx + 1}
+                                        </div>
+                                        <h2 className="text-sm font-bold text-gray-800 uppercase flex-1 leading-none">{d.categoria}</h2>
+                                        <div className="text-right leading-none">
+                                            <p className="text-[10px] font-bold text-slate-500 mb-0.5">{d.data}</p>
+                                            <p className="text-sm font-black text-blue-700">{formatCurrency(d.valor)}</p>
+                                        </div>
+                                    </div>
 
-    {despesas.map((d, idx) => (
+                                    <div className="bg-blue-50 border border-blue-100 rounded-md p-1.5 mb-1.5 text-[11px] text-gray-700 leading-tight">
+                                        <span className="font-bold text-blue-800">JUSTIFICATIVA:</span>
+                                        {' '}
+                                        <span className="font-normal">
+                                            {d.justificativa}
+                                            {d.categoria === 'Combustível' && d.kmPercorrido && d.consumoKmLitro && d.precoCombustivel && (
+                                                <span>
+                                                    {' '}<strong>MEMÓRIA DE CÁLCULO:</strong>{' '}
+                                                    Valor = (KM percorrido ÷ Consumo km/l) × Preço do combustível.{' '}
+                                                    Aplicação:{' '}({d.kmPercorrido} km / {d.consumoKmLitro} km/l) × R$ {d.precoCombustivel}/l = {formatCurrency(d.valor)}.
+                                                </span>
+                                            )}
+                                        </span>
+                                    </div>
 
-        <div
-            key={idx}
-            className="expense-block break-inside-avoid w-full mb-2"
-        >
+                                    {d.anexos && d.anexos.length > 0 && (
+                                        <div className="space-y-2 mt-2">
+                                            {d.anexos.map((img, imgIdx) => (
+                                                <div key={imgIdx} className="flex justify-center">
+                                                    <img src={img} alt={`Comprovante ${imgIdx + 1}`} className="max-w-full max-h-[500px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
 
-            <div className="flex items-center gap-2 mb-1.5">
-
-                <div className="bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]">
-                    {idx + 1}
-                </div>
-
-                <h2 className="text-sm font-bold text-gray-800 uppercase flex-1 leading-none">
-                    {d.categoria}
-                </h2>
-
-                <div className="text-right leading-none">
-
-                    <p className="text-[10px] font-bold text-slate-500 mb-0.5">
-                        {d.data}
-                    </p>
-
-                    <p className="text-sm font-black text-blue-700">
-                        {formatCurrency(d.valor)}
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div className="bg-blue-50 border border-blue-100 rounded-md p-1.5 mb-1.5 text-[11px] text-gray-700 leading-tight">
-
-                <span className="font-bold text-blue-800">
-                    JUSTIFICATIVA:
-                </span>
-
-                {' '}
-
-                <span className="font-normal">
-
-                    {d.justificativa}
-
-                    {d.categoria === 'Combustível' &&
-                    d.kmPercorrido &&
-                    d.consumoKmLitro &&
-                    d.precoCombustivel && (
-
-                        <>
-                            {' '}
-                            <strong>
-                                MEMÓRIA DE CÁLCULO:
-                            </strong>
-                            {' '}
-                            Valor = (KM percorrido ÷ Consumo km/l)
-                            × Preço do combustível.
-                            {' '}
-                            Aplicação:
-                            {' '}
-                            ({d.kmPercorrido} km / {d.consumoKmLitro} km/l)
-                            × R$ {d.precoCombustivel}/l
-                            = {formatCurrency(d.valor)}.
-                        </>
-
-                    )}
-
-                </span>
-
-            </div>
-
-            {d.anexos?.length > 0 && (
-
-                <div className="space-y-2 mt-2">
-
-                    {d.anexos.map((img, imgIdx) => (
-
-                        <div
-                            key={imgIdx}
-                            className="flex justify-center"
-                        >
-
-                            <img
-                                src={img}
-                                alt={`Comprovante ${imgIdx + 1}`}
-                                className="max-w-full max-h-[500px] object-contain border border-dashed border-slate-300 rounded-lg p-1 bg-slate-50"
-                            />
-
+                                    {idx === despesas.length - 1 && (
+                                        <div className="mt-4 pt-3 border-t-2 border-slate-100 text-center font-normal" style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}>
+                                            <p className="text-[10px] text-gray-500 mb-4 px-12 leading-tight">
+                                                Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.
+                                            </p>
+                                            <p className="text-[11px] font-semibold text-gray-600 mb-6">Maceió - AL, _____ / _____ / __________</p>
+                                            
+                                            <div className="w-1/2 mx-auto border-t border-gray-400 pt-1">
+                                                <p className="font-bold text-xs text-gray-800 uppercase">{formData.representante || 'REPRESENTANTE LEGAL'}</p>
+                                                <p className="text-[9px] text-gray-500">Representante Legal</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-
-                    ))}
-
-                </div>
-
-            )}
-
-            {idx === despesas.length - 1 && (
-
-    <div
-        className="
-            mt-4
-            pt-3
-            border-t-2
-            border-slate-100
-            text-center
-            font-normal
-        "
-        style={{
-            breakInside: 'avoid',
-            pageBreakInside: 'avoid'
-        }}
-    >
-
-                    <p className="text-[10px] text-gray-500 mb-4 px-12 leading-tight">
-                        Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.
-                    </p>
-
-                    <p className="text-[11px] font-semibold text-gray-600 mb-6">
-                        Maceió - AL, _____ / _____ / __________
-                    </p>
-
-                    <div className="w-1/2 mx-auto border-t border-gray-400 pt-1">
-
-                        <p className="font-bold text-xs text-gray-800 uppercase">
-                            {formData.representante || 'REPRESENTANTE LEGAL'}
-                        </p>
-
-                        <p className="text-[9px] text-gray-500">
-                            Representante Legal
-                        </p>
-
                     </div>
 
                 </div>
+            );
+        }
 
-            )}
-
-        </div>
-
-    ))}
-
-</div>
-                      
-                                              
-                    </div> {/* fecha pdf-content */}
-
-</div> {/* fecha min-h-screen */}
-
-);
-
-}
-
-const root = ReactDOM.createRoot(
-    document.getElementById('root')
-);
-
-root.render(<ControleDespesas />);
-
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ControleDespesas />);
     </script>
     
     <!-- Registro do Service Worker -->
