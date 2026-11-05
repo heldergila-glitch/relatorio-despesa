@@ -680,29 +680,35 @@
                                             <p className="text-[10px] text-gray-500 mb-4 px-12 leading-tight">
                                                 Declaro, sob as penas da lei, que as despesas aqui relatadas são verdadeiras e compõem o custo de vida e tratamento do requerente.
                                             </p>
-                                            <div className="flex justify-between items-start mt-6">
+                                            <table className="w-full mt-8">
+    <tbody>
+        <tr>
 
-    <div className="pt-4">
-        <p className="text-[11px] font-semibold text-gray-600">
-            Maceió - AL, _____ / _____ / __________
-        </p>
-    </div>
+            <td className="w-1/2 align-bottom">
+                <p className="text-[11px] font-semibold text-gray-600">
+                    Maceió - AL, _____ / _____ / __________
+                </p>
+            </td>
 
-    <div className="w-56 text-center">
+            <td className="w-1/2 text-center align-bottom">
 
-        <div className="border-t border-gray-400 pt-1">
-            <p className="font-bold text-xs text-gray-800 uppercase">
-                {formData.representante || 'REPRESENTANTE LEGAL'}
-            </p>
+                <div className="w-56 mx-auto border-t border-gray-400 pt-1">
 
-            <p className="text-[9px] text-gray-500">
-                Representante Legal
-            </p>
-        </div>
+                    <p className="font-bold text-xs text-gray-800 uppercase">
+                        {formData.representante || 'REPRESENTANTE LEGAL'}
+                    </p>
 
-    </div>
+                    <p className="text-[9px] text-gray-500">
+                        Representante Legal
+                    </p>
 
-</div>
+                </div>
+
+            </td>
+
+        </tr>
+    </tbody>
+</table>
                                         </div>
                                     )}
                                 </div>
